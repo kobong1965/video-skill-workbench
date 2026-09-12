@@ -1,0 +1,35 @@
+import { expect, it } from 'vitest';
+import { windowsOutput, windowsPayload, windowsRuntimeEnvironment, windowsWebInput, distributableFile } from '../../scripts/windows-package';
+
+it('Windows 包只写明确的独立产物子目录，不写源码或数据根', () => {
+  expect(windowsOutput('E:/Codex工作盘/artifacts/test-builds/video-skill-workbench/windows-0.1.1')).toContain('windows-0.1.1');
+  for (const location of ['C:/Downloads/app', 'E:/Codex工作盘', 'E:/Codex工作盘/artifacts/latest', 'E:/Codex工作盘/projects/video-skill-workbench-data', 'relative/path', 'E:/Codex工作盘/artifacts/latest/video-skill-workbench/../other']) {
+    expect(() => windowsOutput(location)).toThrow();
+  }
+});
+
+it('网页输入不能把用户目录、项目源码或整个产物根误当成网页打包', () => {
+  expect(windowsWebInput('E:/Codex工作盘/artifacts/test-builds/video-skill-workbench/windows-web')).toContain('windows-web');
+  for (const folder of ['E:/Codex工作盘/projects/video-skill-workbench-data', 'E:/Codex工作盘/projects/video-skill-workbench', 'E:/Codex工作盘/artifacts/latest/video-skill-workbench']) expect(() => windowsWebInput(folder)).toThrow();
+});
+
+it('实际发行文件过滤已识别的测试示例、用户秘密和缓存，不仅检查顶层目录', () => {
+  for (const file of ['node_modules/fastify/test/helper.js', 'node_modules/foo/.env.local', 'local-secrets.json', 'runtime/postgres-local.json', 'desktop-profile/Cookies', 'apps/api/foo.test.ts', 'node_modules/pg-protocol/dist/inbound-parser.test.d.ts', 'node_modules/pg-protocol/dist/inbound-parser.test.js.map']) expect(distributableFile(file)).toBe(false);
+  for (const file of ['node_modules/fastify/lib/route.js', 'runtime/embedded-postgres/LICENSE.md', 'apps/api/auth.ts']) expect(distributableFile(file)).toBe(true);
+  for (const file of ['node_modules/abstract-logging/test.js', 'node_modules/pg-protocol/src/testing/test-buffers.ts', 'node_modules/fastq/example.js', 'node_modules/quick-format-unescaped/benchmark.js', 'node_modules/foo/index.test-d.ts']) expect(distributableFile(file)).toBe(false);
+});
+
+it('分发只取程序白名单，既有数据、会话、密钥和测试产物不进入安装包', () => {
+  expect(windowsPayload).toContain('apps/api');
+  expect(windowsPayload).toContain('database/migrations');
+  expect(windowsPayload).not.toContain('tests');
+  expect(windowsPayload.some(name => /secrets|dataRoot|media|\.env|profile/.test(name))).toBe(false);
+});
+
+it('包内运行环境绑定包内工具，沿用指定的 E 盘资料且不指向开发源码', () => {
+  const env = windowsRuntimeEnvironment('E:/Codex工作盘/artifacts/latest/video-skill-workbench/windows', 'E:/Codex工作盘/projects/video-skill-workbench-data');
+  expect(env.VSW_PG_PACKAGE).toContain('windows');
+  expect(env.VSW_DATA_ROOT).toContain('video-skill-workbench-data');
+  expect(env.TEMP).toContain('Codex工作盘');
+  expect(() => windowsRuntimeEnvironment('C:/app', 'C:/data')).toThrow();
+});

@@ -1,0 +1,23 @@
+node_modules/
+bin/
+obj/
+.env
+.env.*
+local-secrets.json
+postgres-local.json
+本机安装码.txt
+desktop-profile/
+*-data/
+*.log
+*.pid
+*.sqlite
+*.sqlite3
+*.dump
+.cache/
+.vite/
+.vite-temp/
+test-results/
+playwright-report/
+coverage/
+# Saved, reviewed Skill/material ZIPs are intentional repository content.
+# Windows executable builds are distributed via GitHub Releases, not Git history.

@@ -1,0 +1,30 @@
+import { useEffect, useRef, type ReactNode, useState } from 'react';
+
+export function Icon({ name }: { name: string }) {
+  const icons: Record<string, ReactNode> = {
+    create: <><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M14 17.5h7m-3.5-3.5v7"/></>,
+    library: <><path d="M5 6h14v15H5zM8 3h11M9 10h6M9 14h6"/></>,
+    history: <><path d="M3 11a9 9 0 1 1 3 8M3 4v7h7M12 7v5l4 2"/></>,
+    image: <><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1"/><path d="m3 17 5-5 4 4 4-6 5 7"/></>,
+    settings: <><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></>,
+    upload: <><path d="M12 16V3m-5 5 5-5 5 5M4 15v5h16v-5"/></>,
+    arrow: <path d="M4 12h16m-6-6 6 6-6 6"/>,
+    check: <path d="m5 12 4 4L19 6"/>,
+    copy: <><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></>,
+  };
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{icons[name] ?? icons.create}</svg>;
+}
+export function Message({ children, error = false }: { children: ReactNode; error?: boolean }) { return <div className={`message ${error ? 'error' : ''}`} role={error ? 'alert' : 'status'}>{children}</div>; }
+export function Empty({ title, children }: { title: string; children: ReactNode }) { return <div className="empty"><Icon name="library"/><h2>{title}</h2><div>{children}</div></div>; }
+export function Modal({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const closeRef = useRef(onClose); closeRef.current = onClose;
+  useEffect(() => { const dialog = ref.current!; dialog.showModal(); const close = () => closeRef.current(); dialog.addEventListener('cancel', close); return () => { dialog.removeEventListener('cancel', close); dialog.close(); }; }, []);
+  return <dialog ref={ref} className="modal" aria-label={title}><header><h2>{title}</h2><button className="icon-button" aria-label="关闭窗口" onClick={onClose}>×</button></header>{children}</dialog>;
+}
+export function AsyncButton({ children, action, className = '', disabled = false }: { children: ReactNode; action: () => Promise<unknown>; className?: string; disabled?: boolean }) {
+  const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+  return <><button className={className} disabled={busy || disabled} onClick={async () => { setBusy(true); setError(''); try { await action(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }}>{busy ? '处理中…' : children}</button>{error ? <Message error>{error}</Message> : null}</>;
+}
+export const statusLabel: Record<string, string> = { draft: '已保存', queued: '排队中', processing: '生成中', running: '生成中', succeeded: '已完成', awaiting_confirmation: '待确认脚本', awaiting_assets: '待准备参考图', awaiting_image_confirmation: '待确认图片', completed: '已完成', failed: '未成功', invalid: '结果需修正', unknown: '结果待确认', partial: '部分完成' };
+export const kindLabel: Record<string, string> = { full: '全片', opening: '开头', detail: '细节', outfit: '上身', comparison: '对比', person: '人物', scene: '场景', angle: '人物角度', storyboard: '故事面板', tailframe: '真实尾帧' };

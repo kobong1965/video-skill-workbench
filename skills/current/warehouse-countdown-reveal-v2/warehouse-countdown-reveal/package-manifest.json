@@ -1,0 +1,30 @@
+{
+  "package_name": "warehouse-countdown-reveal",
+  "version": "1.0.0",
+  "created_date": "2026-09-08",
+  "purpose": "Reusable approved opening module for a product-sales video, ready for a future product image and downstream script skill.",
+  "entrypoint": "SKILL.md",
+  "approved_video": {
+    "path": "assets/approved-opening-video.mp4",
+    "sha256": "EB03AF241C623989C7BF4A607BF18D20955F244D10587585E4745F1BD335931D",
+    "size_bytes": 3766301,
+    "duration_seconds": 6.08,
+    "resolution": "480x854",
+    "frame_rate": 24,
+    "video_codec": "H.264/AVC",
+    "audio_codec": "AAC-LC stereo"
+  },
+  "approved_final_frame": {
+    "path": "assets/approved-opening-final-frame.png",
+    "sha256": "E803A7A18BFB69CE26F23B26D75CEEF2CEBEA95B83277F54891675265781E449",
+    "size_bytes": 390905,
+    "resolution": "480x854",
+    "source_frame_zero_based": 144,
+    "source_time_seconds": 6.0
+  },
+  "future_inputs": [
+    "user product image",
+    "downstream sales-video script skill"
+  ],
+  "notes": "Product count, grid and packaging are intentionally parameterized rather than copied permanently from the reference video."
+}

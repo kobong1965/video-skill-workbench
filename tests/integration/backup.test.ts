@@ -1,0 +1,38 @@
+import { it, expect } from 'vitest';
+import { randomUUID } from 'node:crypto';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import path from 'node:path';
+import sharp from 'sharp';
+import { harness } from '../helpers';
+import { createDatabase } from '../../packages/storage/database';
+import { saveMedia, mediaBytes } from '../../packages/storage/private-files';
+import { createBackup, restoreBackup } from '../../packages/storage/backup';
+
+it('隔离备份恢复保留账号、版本、任务、图片和解密材料，不覆盖已有目录', async () => {
+  const h = await harness('backup'); const account = await h.account('admin');
+  const bytes = await sharp({ create: { width: 12, height: 12, channels: 3, background: '#abc' } }).png().toBuffer();
+  const image = await saveMedia(h.context, account.id, '恢复产品.png', bytes);
+  const skill = (await h.app.inject({ method: 'POST', url: '/api/skills', headers: account.headers, payload: { name: '需恢复的脚本', kind: 'full', duration: 10, text: '# 恢复后的原始正文' } })).json();
+  const task = (await h.app.inject({ method: 'POST', url: '/api/tasks', headers: account.headers, payload: { name: '需恢复的任务', media: [{ id: image.id, role: 'product' }], platform: 'douyin', market: 'CN', category: '服装', targetDuration: 10, model: 'seedance-2.5', generatePerson: false, generateScene: false, voice: 'none', selections: [{ id: skill.id, versionId: skill.versionId, duration: 10 }] } })).json();
+  await mkdir(h.context.dataRoot, { recursive: true });
+  await writeFile(path.join(h.context.dataRoot, 'local-secrets.json'), JSON.stringify({ masterKey: h.context.masterKey, setupKey: h.context.setupKey }));
+  const backup = path.join(process.env.VSW_TEST_ROOT!, `backup-${randomUUID()}`);
+  const saved = await createBackup(process.env.VSW_DATABASE_URL!, h.context.dataRoot, backup); expect(saved.files).toBeGreaterThan(2);
+  const databaseName = `restore_${randomUUID().replaceAll('-', '')}`;
+  const base = createDatabase(process.env.VSW_DATABASE_URL!); await base.query(`CREATE DATABASE ${databaseName} TEMPLATE template0 ENCODING 'UTF8' LC_COLLATE 'C' LC_CTYPE 'C'`); await base.end();
+  const target = new URL(process.env.VSW_DATABASE_URL!); target.pathname = `/${databaseName}`;
+  const restoredRoot = path.join(process.env.VSW_TEST_ROOT!, `restore-${randomUUID()}`);
+  await restoreBackup(backup, target.toString(), restoredRoot);
+  const schema = (await h.db.query('SELECT current_schema()')).rows[0].current_schema;
+  target.searchParams.set('options', `-c search_path=${schema}`);
+  const restored = createDatabase(target.toString());
+  expect((await restored.query('SELECT display_name FROM users WHERE id=$1', [account.id])).rows[0].display_name).toBe('测试用户');
+  expect((await restored.query('SELECT text FROM skill_versions WHERE id=$1', [skill.versionId])).rows[0].text).toContain('原始正文');
+  expect((await restored.query('SELECT snapshot FROM tasks WHERE id=$1', [task.id])).rows[0].snapshot.skills[0].versionId).toBe(skill.versionId);
+  const media = (await restored.query('SELECT * FROM media WHERE id=$1', [image.id])).rows[0];
+  expect(await mediaBytes({ ...h.context, db: restored, dataRoot: restoredRoot }, media)).toEqual(bytes);
+  expect(JSON.parse(await readFile(path.join(restoredRoot, 'local-secrets.json'), 'utf8')).masterKey).toBe(h.context.masterKey);
+  await expect(restoreBackup(backup, target.toString(), restoredRoot)).rejects.toThrow();
+  expect((await restored.query('SELECT count(*) FROM users WHERE id=$1', [account.id])).rows[0].count).toBe('1');
+  await restored.end(); await h.close();
+}, 60000);

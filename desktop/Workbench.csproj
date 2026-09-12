@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>视频Skill工作台</AssemblyName>
+    <LangVersion>14.0</LangVersion>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeFrameworkVersion>10.0.12</RuntimeFrameworkVersion>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>false</PublishTrimmed>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ApplicationIcon>branding/workbench.ico</ApplicationIcon>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <RestorePackagesPath>E:/Codex工作盘/caches/video-skill-workbench/nuget/packages</RestorePackagesPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(NativeTests)' == 'true'">
+    <OutputType>Exe</OutputType>
+    <AssemblyName>native-tests</AssemblyName>
+    <StartupObject>WindowsHostTests</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Workbench.cs" />
+    <Compile Include="WindowChrome.cs" />
+    <Compile Include="../tests/windows-host.cs" Condition="'$(NativeTests)' == 'true'" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4191.47" />
+  </ItemGroup>
+  <!-- WebView2 includes both UI integrations; this host uses WinForms only. -->
+  <Target Name="RemoveUnusedWpfIntegration" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Reference Remove="@(Reference)" Condition="'%(Filename)' == 'Microsoft.Web.WebView2.Wpf'" />
+    </ItemGroup>
+  </Target>
+</Project>

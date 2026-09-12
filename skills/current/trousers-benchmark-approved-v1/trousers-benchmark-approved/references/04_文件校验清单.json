@@ -1,0 +1,68 @@
+{
+  "skill": "trousers-benchmark-approved",
+  "version": "1.0.0",
+  "date": "2026-09-12",
+  "note": "Excludes this checksum manifest to avoid self-reference. All source media copied without transcoding. Only user-approved benchmark-connected version included.",
+  "files": [
+    {
+      "path": "agents/openai.yaml",
+      "bytes": 392,
+      "sha256": "949C2C8CDB5370149BA11358864C2A403AF90625484AC1DEC1F99E1553D37071",
+      "role": null
+    },
+    {
+      "path": "assets/approved/视频节点 1.mp4",
+      "bytes": 8241624,
+      "sha256": "0D86D032FBF6A7AEB9802E10F3B6A3DD617321F44BF7BADF65267AA29B7EEBA5",
+      "role": "user-approved-result"
+    },
+    {
+      "path": "assets/benchmark/@SHUANGJIU线上潮牌店 少年嘛就该明媚，该去到草长莺飞出 1080P.mp4",
+      "bytes": 3320018,
+      "sha256": "664531E2CEF9E5B1B878914105F776FEC5CA6B425C3AC1D2E4B063E5F49532CA",
+      "role": "required-video-reference"
+    },
+    {
+      "path": "assets/product/43354.png",
+      "bytes": 393899,
+      "sha256": "DA0F8C51467851D4BEE0708023E2BED0220A567D6EA6A30F32888A8BC3C727A7",
+      "role": "required-product-image"
+    },
+    {
+      "path": "assets/workflow/01_用户确认的工作流.png",
+      "bytes": 257519,
+      "sha256": "D6E2B8CE8CCB4EA6D0807C3C7EEF26485F8AD0FC3E973F03E7882D698A508C67",
+      "role": "workflow-screenshot-not-generation-input"
+    },
+    {
+      "path": "assets/workflow/02_版本确认聊天截图.png",
+      "bytes": 243030,
+      "sha256": "55B995A0D9D1C08A8DB503409CEA9C16E86F6EC44BA5FE34258E36813C54BEF3",
+      "role": "user-version-confirmation-not-generation-input"
+    },
+    {
+      "path": "references/01_版本锁定与连接说明.md",
+      "bytes": 4597,
+      "sha256": "6E701A021F47E552038805B5D3FA59D86E8B0FEA9FA66D63CB143AEF78BC75E5",
+      "role": null
+    },
+    {
+      "path": "references/02_该版本实际提示词_原文.txt",
+      "bytes": 10517,
+      "sha256": "A7CCD2134618727B23E665BE93EFDE7AF024213318BC5F6330A6236F8DB8A251",
+      "role": null
+    },
+    {
+      "path": "references/03_节点参数与连接快照.json",
+      "bytes": 25882,
+      "sha256": "FE586E369033F46F0E900975DF4594CD07C298220CA8B98F5A74FA569540C8FF",
+      "role": null
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 5234,
+      "sha256": "3B048EBFD07BE90619B531BB5347E80950110179A2E4F6EF6253FABC94E345C5",
+      "role": null
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "video-skill-workbench",
+  "version": "0.1.6",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "node scripts/run.mjs dev",
+    "start": "node scripts/run.mjs start",
+    "worker": "node scripts/run.mjs worker",
+    "build": "node scripts/run.mjs build",
+    "lint": "tsc --noEmit",
+    "test": "node scripts/run.mjs test",
+    "test:e2e": "node scripts/run.mjs e2e",
+    "backup": "node scripts/run.mjs backup"
+  },
+  "dependencies": {
+    "@fastify/cookie": "11.1.2",
+    "@fastify/multipart": "10.1.1",
+    "@fastify/rate-limit": "11.2.0",
+    "@fastify/static": "10.1.3",
+    "fastify": "5.12.3",
+    "fflate": "0.8.3",
+    "pg": "8.23.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sharp": "0.35.4",
+    "tsx": "4.23.13",
+    "undici": "8.10.2",
+    "yauzl": "3.4.0",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "26.5.0",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@types/yauzl": "3.4.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "5.0.0"
+  }
+}

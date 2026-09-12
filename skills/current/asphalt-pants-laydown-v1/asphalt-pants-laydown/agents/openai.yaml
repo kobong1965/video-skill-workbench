@@ -1,0 +1,4 @@
+interface:
+  display_name: "沥青躺拍裤装"
+  short_description: "用新裤子商品图套用沥青躺拍连续运镜，生成可直接粘贴的中文视频提示词"
+  default_prompt: "使用 $asphalt-pants-laydown，根据我上传的裤子图片生成中文 AI 视频提示词。"

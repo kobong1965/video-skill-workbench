@@ -1,0 +1,230 @@
+{
+  "version": "0.1.6",
+  "exportedAt": "2026-09-12T12:57:21.281Z",
+  "softwareIncludesUserData": false,
+  "skills": [
+    {
+      "name": "深灰阔腿裤｜对标视频确认版",
+      "tags": [],
+      "version": 1,
+      "kind": "full",
+      "duration": 14,
+      "source": "2026-09-12 用户确认保留的 480p 对标视频版；商品图与原始完整对标视频必须同步上传，并连入同一视频节点。原成片、工作流截图及实际提示词全部保留。",
+      "status": "current",
+      "folder": "current/trousers-benchmark-approved-v1",
+      "archive": "import-packages/current/trousers-benchmark-approved-v1.zip",
+      "sha256": "fac47084d196151e33aeafbc07dbf410ab8bee7bfc23a51e775695353aa9a771",
+      "files": 12
+    },
+    {
+      "name": "沥青躺拍裤装",
+      "tags": [
+        "服装",
+        "裤装",
+        "沥青躺拍",
+        "连续长镜头",
+        "自然光",
+        "换款"
+      ],
+      "version": 1,
+      "kind": "full",
+      "duration": 11,
+      "source": "用户提供原视频与复刻效果并指定入库；默认11秒、9:16。主要预览为复刻效果，第二份为原视频对照。",
+      "status": "current",
+      "folder": "current/asphalt-pants-laydown-v1",
+      "archive": "import-packages/current/asphalt-pants-laydown-v1.zip",
+      "sha256": "b2930d1c86013c5461bf2595c82e485fc6484fdc328117aefc16016df95f769e",
+      "files": 9
+    },
+    {
+      "name": "停车场上衣",
+      "tags": [
+        "服装",
+        "停车场",
+        "阳光",
+        "自然风",
+        "九镜头",
+        "沥青平铺"
+      ],
+      "version": 1,
+      "kind": "full",
+      "duration": 17,
+      "source": "",
+      "status": "current",
+      "folder": "current/parking-lot-top-v1",
+      "archive": "import-packages/current/parking-lot-top-v1.zip",
+      "sha256": "ac37031c60d39494888194bae4bde030dcdc2432abfadd08e070c692861e1e7b",
+      "files": 6
+    },
+    {
+      "name": "惊讶+321倒数",
+      "tags": [
+        "商场"
+      ],
+      "version": 2,
+      "kind": "opening",
+      "duration": 7,
+      "source": "",
+      "status": "current",
+      "folder": "current/warehouse-countdown-reveal-v2",
+      "archive": "import-packages/current/warehouse-countdown-reveal-v2.zip",
+      "sha256": "d74ef83e815e00cc7f76fd12afdc1ee8112b38c5bde7a243c60a27b7b09222ef",
+      "files": 9
+    },
+    {
+      "name": "惊讶+321倒数",
+      "tags": [
+        "商场"
+      ],
+      "version": 1,
+      "kind": "opening",
+      "duration": 17,
+      "source": "",
+      "status": "history",
+      "folder": "history/warehouse-countdown-reveal-v1",
+      "archive": "import-packages/history/warehouse-countdown-reveal-v1.zip",
+      "sha256": "d74ef83e815e00cc7f76fd12afdc1ee8112b38c5bde7a243c60a27b7b09222ef",
+      "files": 9
+    }
+  ],
+  "media": [
+    {
+      "file": "materials/01/warehouse-countdown-reveal-skill-v1.0.0.zip",
+      "mime": "application/zip",
+      "bytes": 4154542,
+      "sha256": "6764592d28c7aa33893ecbd056de6d692c77f7814470f588045ac750056b9263"
+    },
+    {
+      "file": "materials/02/approved-opening-final-frame.png",
+      "mime": "image/png",
+      "bytes": 390905,
+      "sha256": "e803a7a18bfb69ce26f23b26d75ceef2cebea95b83277f54891675265781e449"
+    },
+    {
+      "file": "materials/03/approved-opening-video.mp4",
+      "mime": "video/mp4",
+      "bytes": 3766301,
+      "sha256": "eb03af241c623989c7bf4a607bf18d20955f244d10587585e4745f1bd335931d"
+    },
+    {
+      "file": "materials/04/45654.png",
+      "mime": "image/png",
+      "bytes": 758676,
+      "sha256": "215cf80219f2846e72308988597a4152ff28f9daed90a6004c6dd4307958086e"
+    },
+    {
+      "file": "materials/05/惊讶+321倒数 · 新创作-R1-完整包.zip",
+      "mime": "application/zip",
+      "bytes": 774435,
+      "sha256": "7ce2ecf03b115655c23fc660ba709f34e6779ed68c2b9f2ac2a5eee7223d1f63"
+    },
+    {
+      "file": "materials/06/停车场上衣-原版导入包.zip",
+      "mime": "application/zip",
+      "bytes": 183447,
+      "sha256": "11b24e164b6e81d65273a6472a0ae5cab2b8e9334791253a8a99260d0f2f3caf"
+    },
+    {
+      "file": "materials/07/reference-screenshot.png",
+      "mime": "image/png",
+      "bytes": 181187,
+      "sha256": "31b3c850871532a46657f78695636dd0686c95680f3781031e99c4db0ac10927"
+    },
+    {
+      "file": "materials/08/沥青躺拍裤装-v1-导入包.zip",
+      "mime": "application/zip",
+      "bytes": 22073393,
+      "sha256": "57e50129e40a5953a04ae8f78613b24dda82bc7c4f97574d3fe0de12e61e835d"
+    },
+    {
+      "file": "materials/09/00-cover.jpg",
+      "mime": "image/jpeg",
+      "bytes": 106346,
+      "sha256": "2f493e19e01fde110958765e15912aecf27d1ed3c4b255070d72fa95e3da6617"
+    },
+    {
+      "file": "materials/10/01-example-product.png",
+      "mime": "image/png",
+      "bytes": 299314,
+      "sha256": "d0d28f14269a29400504bd73f777ccc5328b79d9d2b6feafd09fc47ff9767607"
+    },
+    {
+      "file": "materials/11/01-replica.mp4",
+      "mime": "video/mp4",
+      "bytes": 11242276,
+      "sha256": "b81bfdcd14b08eef10854a970436260f8418358dca6bdb89db79e46cc205058f"
+    },
+    {
+      "file": "materials/12/02-original.mp4",
+      "mime": "video/mp4",
+      "bytes": 9897971,
+      "sha256": "4c48f42718353427a6b772a814cbf5a046503dfd487b3b525b43cc7f93104051"
+    },
+    {
+      "file": "materials/13/original-keyframes.jpg",
+      "mime": "image/jpeg",
+      "bytes": 532109,
+      "sha256": "1660baff2aa6309837d4e468ce447098f8ab04b8fe71b3985e9192181647aceb"
+    },
+    {
+      "file": "materials/14/374f33b98210ffbe7dffa21efd16c948.png",
+      "mime": "image/png",
+      "bytes": 365234,
+      "sha256": "03e2b049a7c227eea2749ff4bd643a78df7bcd24e18e62b3cdbd7f5f32deff85"
+    },
+    {
+      "file": "materials/15/374f33b98210ffbe7dffa21efd16c948.png",
+      "mime": "image/png",
+      "bytes": 365234,
+      "sha256": "03e2b049a7c227eea2749ff4bd643a78df7bcd24e18e62b3cdbd7f5f32deff85"
+    },
+    {
+      "file": "materials/16/9月8日.mp4",
+      "mime": "video/mp4",
+      "bytes": 30004185,
+      "sha256": "83bd527a4ccff4721c1dea66dd31e1eb8cc6e5574f91ab8437c1415c98312243"
+    },
+    {
+      "file": "materials/17/深灰阔腿裤_对标确认版_工作台导入包_20260912.zip",
+      "mime": "application/zip",
+      "bytes": 12434460,
+      "sha256": "b7b2cdb3b37929fd0ef02c21f5aae5cc37bff4f5647af6f94160a67815382ba5"
+    },
+    {
+      "file": "materials/18/视频节点 1.mp4",
+      "mime": "video/mp4",
+      "bytes": 8241624,
+      "sha256": "0d86d032fbf6a7aeb9802e10f3b6a3dd617321f44bf7badf65267aa29b7eeba5"
+    },
+    {
+      "file": "materials/19/@SHUANGJIU线上潮牌店 少年嘛就该明媚，该去到草长莺飞出 1080P.mp4",
+      "mime": "video/mp4",
+      "bytes": 3320018,
+      "sha256": "664531e2cef9e5b1b878914105f776fec5ca6b425c3ac1d2e4b063e5f49532ca"
+    },
+    {
+      "file": "materials/20/43354.png",
+      "mime": "image/png",
+      "bytes": 393899,
+      "sha256": "da0f8c51467851d4bee0708023e2bed0220a567d6ea6a30f32888a8bc3c727a7"
+    },
+    {
+      "file": "materials/21/01_用户确认的工作流.png",
+      "mime": "image/png",
+      "bytes": 257519,
+      "sha256": "d6e2b8ce8ccb4ea6d0807c3c7eef26485f8ad0fc3e973f03e7882d698a508c67"
+    },
+    {
+      "file": "materials/22/02_版本确认聊天截图.png",
+      "mime": "image/png",
+      "bytes": 243030,
+      "sha256": "55b995a0d9d1c08a8db503409cea9c16e86f6ec44ba5fe34258e36813c54bef3"
+    }
+  ],
+  "counts": {
+    "skills": 4,
+    "versions": 5,
+    "savedFileEntries": 45,
+    "savedMedia": 22
+  }
+}

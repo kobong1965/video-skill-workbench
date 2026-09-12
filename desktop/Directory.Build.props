@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>E:/Codex工作盘/temp/video-skill-workbench/dotnet/$(NativeBuildKey)/obj/</BaseIntermediateOutputPath>
+    <BaseOutputPath>E:/Codex工作盘/temp/video-skill-workbench/dotnet/$(NativeBuildKey)/bin/</BaseOutputPath>
+  </PropertyGroup>
+</Project>
