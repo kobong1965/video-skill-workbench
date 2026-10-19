@@ -1,0 +1,9 @@
+.canvas-import-summary { margin: 0; padding: 1rem; border-radius: 1rem; background: var(--blue); }
+.canvas-import-status { padding: 1.25rem; border: 1px solid var(--line); border-radius: 1rem; }
+.canvas-import-status h3 { margin: 0; }
+.canvas-import-status progress { display: block; width: 100%; height: .75rem; accent-color: var(--link); }
+.canvas-import-status ol { list-style: none; margin: 1rem 0; padding: 0; display: grid; gap: .5rem; max-height: 18rem; overflow: auto; }
+.canvas-import-status li { display: flex; align-items: center; gap: .5rem; color: var(--muted); }
+.canvas-import-status li[data-status="succeeded"] { color: #35725b; }
+.canvas-import-status li[data-status="running"] { color: var(--link); }
+.canvas-open { display: inline-flex; align-items: center; min-height: 2.75rem; padding: .5rem 1rem; border-radius: .75rem; background: var(--ink); color: var(--paper); }

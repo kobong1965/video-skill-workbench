@@ -1,0 +1,35 @@
+import { test, expect } from './fixtures';
+
+test('短操作保留完整名称，悬停与键盘提示可用且 Escape 可关闭', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('登录账号').fill('e2e-admin');
+  await page.getByLabel('密码', { exact: true }).fill('test-password-2026');
+  await page.getByRole('button', { name: '进入工作台' }).click();
+  await expect(page.getByRole('heading', { name: '创作工作台', exact: true })).toBeVisible();
+  const save = page.getByRole('button', { name: '保存草稿', exact: true });
+  const hint = page.getByRole('tooltip', { name: '保存草稿', exact: true });
+  await save.focus();
+  await expect(hint).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(hint).toBeHidden();
+  await save.blur();
+  await save.hover();
+  await expect(hint).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expect(hint).toBeHidden();
+  await expect(save).toHaveText('存草稿');
+  await expect(page.getByRole('button', { name: '下一步', exact: true })).toBeDisabled();
+  await expect(page.getByRole('link', { name: '创作工作台', exact: true })).toHaveText('创作');
+  const combine = page.getByRole('checkbox', { name: '需要组合多个片段', exact: true });
+  await combine.focus();
+  await page.keyboard.press('Space');
+  await expect(combine).toBeChecked();
+  await page.keyboard.press('Space');
+  await expect(combine).not.toBeChecked();
+  await page.setViewportSize({ width: 1440, height: 480 });
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await save.focus();
+  await expect(hint).toBeInViewport();
+  const hintBounds = await hint.boundingBox();
+  expect(hintBounds!.y).toBeGreaterThanOrEqual(0);
+});

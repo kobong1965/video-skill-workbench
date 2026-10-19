@@ -4,14 +4,14 @@ import { createDatabase, migrate } from '../packages/storage/database';
 import { buildApp } from '../apps/api/app';
 import { digest, passwordHash } from '../apps/api/auth';
 
-export async function harness(name: string, origin = 'http://127.0.0.1:4178') {
+export async function harness(name: string, origin = 'http://127.0.0.1:4178', singleUserMode = false) {
   const schema = `vsw_${name}_${randomUUID().replaceAll('-', '')}`;
   const base = createDatabase(process.env.VSW_DATABASE_URL!);
   await base.query(`CREATE SCHEMA "${schema}"`); await base.end();
   const url = new URL(process.env.VSW_DATABASE_URL!);
   url.searchParams.set('options', `-c search_path=${schema}`);
   const db = createDatabase(url.toString()); await migrate(db);
-  const context = { db, dataRoot: path.join(process.env.VSW_TEST_ROOT!, schema), masterKey: 'a'.repeat(64), setupKey: 'local-setup-key', origin, testMode: false };
+  const context = { db, dataRoot: path.join(process.env.VSW_TEST_ROOT!, schema), masterKey: 'a'.repeat(64), setupKey: 'local-setup-key', origin, testMode: false, singleUserMode };
   const app = await buildApp(context);
   async function account(role: 'admin' | 'member' = 'member') {
     const id = randomUUID(); const token = randomUUID(); const csrf = randomUUID();

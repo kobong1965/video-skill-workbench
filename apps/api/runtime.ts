@@ -19,5 +19,5 @@ export async function runtimeContext(): Promise<AppContext> {
     await writeFile(path.join(dataRoot, '本机安装码.txt'), `首次开通工作台时填写以下安装码。请勿转发；开通后失效。\n\n${secrets.setupKey}\n`, { flag: 'wx', mode: 0o600 });
   }
   const db = createDatabase(databaseUrl); await migrate(db);
-  return { db, dataRoot, ...secrets, origin: process.env.VSW_ORIGIN ?? 'http://127.0.0.1:4178' };
+  return { db, dataRoot, ...secrets, origin: process.env.VSW_ORIGIN ?? 'http://127.0.0.1:4178', singleUserMode: process.env.VSW_SINGLE_USER !== '0' };
 }

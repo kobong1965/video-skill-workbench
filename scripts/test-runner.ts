@@ -6,6 +6,8 @@ import { localPostgres, freePort } from './postgres';
 
 const mode = process.argv[2] ?? 'unit';
 const root = path.join(process.env.VSW_TEMP_ROOT!, 'tests', randomUUID());
+// Only throwaway databases under the test temp root skip slow initdb fsync.
+process.env.VSW_TEST_INIT_NOSYNC = '1';
 await mkdir(root, { recursive: true });
 const database = await localPostgres(path.join(root, 'postgres'));
 const entry = mode === 'e2e' ? 'node_modules/@playwright/test/cli.js' : 'node_modules/vitest/vitest.mjs';

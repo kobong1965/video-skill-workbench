@@ -39,6 +39,7 @@ export async function freePort() {
 
 export async function localPostgres(root: string, requestedPort?: number) {
   if (!path.resolve(root).toLowerCase().startsWith(path.resolve('E:/Codex工作盘').toLowerCase() + path.sep)) throw new Error('数据库必须位于工作盘');
+  const disposable = process.env.VSW_TEST_INIT_NOSYNC === '1' && path.resolve(root).toLowerCase().startsWith(path.resolve('E:/Codex工作盘/temp/video-skill-workbench').toLowerCase() + path.sep);
   await mkdir(root, { recursive: true });
   const settingsFile = path.join(root, 'postgres-local.json');
   let settings: { password: string; port: number };
@@ -63,13 +64,13 @@ export async function localPostgres(root: string, requestedPort?: number) {
     try {
       // Windows builds embed ANSI library paths during bootstrap. Use ASCII only
       // for the empty system template; the application database below is UTF-8.
-      await promisify(execFile)(binaries.initdb, ['-D', dataDir, '-U', 'postgres', '--auth=scram-sha-256', `--pwfile=${passwordFile}`, '--encoding=SQL_ASCII', '--locale=C'], { windowsHide: true, timeout: 60000, env: { ...process.env, TEMP: root, TMP: root } });
+      await promisify(execFile)(binaries.initdb, ['-D', dataDir, '-U', 'postgres', '--auth=scram-sha-256', `--pwfile=${passwordFile}`, '--encoding=SQL_ASCII', '--locale=C', ...(disposable ? ['--no-sync'] : [])], { windowsHide: true, timeout: 60000, env: { ...process.env, TEMP: root, TMP: root } });
     } finally { await unlink(passwordFile); }
   }
   const ctl = path.join(path.dirname(binaries.postgres), 'pg_ctl.exe');
   // pg_ctl uses a restricted token on Windows; do not start postgres directly
   // from an elevated desktop agent or create a machine-wide service/account.
-  await control(ctl, ['-D', dataDir, '-l', path.join(root, 'postgres.log'), '-o', `-p ${settings.port} -h 127.0.0.1`, '-w', 'start']);
+  await control(ctl, ['-D', dataDir, '-l', path.join(root, 'postgres.log'), '-o', `-p ${settings.port} -h 127.0.0.1${disposable ? ' -F' : ''}`, '-w', 'start']);
   const stop = () => control(ctl, ['-D', dataDir, '-m', 'fast', '-w', 'stop']);
   try {
     for (let retry = 0; retry < 120; retry++) {

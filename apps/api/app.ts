@@ -14,6 +14,8 @@ import { registerTasks } from './tasks';
 import { registerJobActions } from './job-actions';
 import { registerAssets } from './assets';
 import { registerExports } from './exports';
+import { registerCanvas } from './canvas';
+import { registerProductSets } from './product-sets';
 import { AppError, type AppContext } from './context';
 
 export async function buildApp(context: AppContext) {
@@ -21,7 +23,7 @@ export async function buildApp(context: AppContext) {
   const app = Fastify({ logger: false, bodyLimit: 2 * 1024 * 1024, trustProxy: false });
   await app.register(cookie);
   await app.register(multipart, { limits: { fileSize: 150 * 1024 * 1024, files: 1, fields: 15 } });
-  await app.register(rateLimit, { max: 300, timeWindow: '1 minute' });
+  await app.register(rateLimit, { global: !context.singleUserMode, max: 300, timeWindow: '1 minute' });
   app.setErrorHandler((error, _request, reply) => {
     if (error instanceof ZodError) return reply.code(400).send({ error: '输入格式不正确', details: error.issues.map(i => `${i.path.join('.')}: ${i.message}`) });
     if (error instanceof AppError) return reply.code(error.statusCode).send({ error: error.message });
@@ -44,7 +46,9 @@ export async function buildApp(context: AppContext) {
   await registerTasks(app, context);
   await registerJobActions(app, context);
   await registerAssets(app, context);
+  await registerProductSets(app, context);
   await registerExports(app, context);
+  await registerCanvas(app, context);
   app.get('/api/health', async request => {
     const desktopRelease = process.env.VSW_RELEASE_ID ?? 'development';
     const challenge = (request.query as Record<string, unknown>).challenge;

@@ -18,8 +18,8 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
 [assembly: AssemblyTitle("视频 Skill 工作台")]
-[assembly: AssemblyVersion("0.1.6.0")]
-[assembly: AssemblyFileVersion("0.1.6.0")]
+[assembly: AssemblyVersion("0.1.16.0")]
+[assembly: AssemblyFileVersion("0.1.16.0")]
 [assembly: SupportedOSPlatform("windows")]
 
 internal static class Program
@@ -83,7 +83,7 @@ internal sealed class WorkbenchWindow : FramelessWindow
             else MessageBox.Show(this, "后台启动完成后会生成安装码。已有账号直接登录即可。", "首次使用");
         });
         menu.Items.Add("刷新", null, delegate { if (view.CoreWebView2 != null) view.Reload(); });
-        menu.Items.Add("使用说明", null, delegate { MessageBox.Show(this, "上传商品 → 选择脚本 → 生成提示词\n\n点击脚本卡片右侧缩略图，播放效果视频或放大参考图片，不改变已选脚本。\n上传区可拖入文件，也可点击选择。商品图支持多张；其他入口每次一个文件。\n拖动顶部空白移动窗口，双击可最大化或还原，边缘可缩放。\n\n首次使用：设置管理员，导入脚本，在管理设置中配置文字接口和额度。\n关闭窗口后，后台任务可以继续；重新打开查看进度。\n本机版不支持远程共享。真实 AI 生成仍需要外部 API。\n\n版本 0.1.6 · 数据保存在 E 盘", "使用说明"); }); 
+        menu.Items.Add("使用说明", null, delegate { MessageBox.Show(this, "上传商品或选择已保存款号、选择 Skill，点击顶部下一步设置并提交。\n任务在创作页右侧任务栏显示，可继续新建其他任务。\n设置可保存多个模型接口，系统按接口空位自动分配、并行处理多个计划。\n\n导入 LibTV 仅上传素材和建立工作流，不自动生成。\n生成模型由你在画布中选择。\n\n单人模式：配置 API Key 后直接生成，无软件额度或重试次数上限。\n版本 0.1.16 · 数据保存在 E 盘", "使用说明"); });
         view.Dock = DockStyle.Fill; view.Visible = false;
         status.Dock = DockStyle.Fill; status.TextAlign = ContentAlignment.MiddleCenter;
         status.Font = new Font("Microsoft YaHei UI", 13); status.Text = "正在打开工作台…\n现有账号、素材和记录将继续保留。";

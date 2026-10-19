@@ -4,7 +4,6 @@ import { AppError, type Routes } from './context';
 import { taskRow, enqueue, addResult, assertImageRevision } from './task-service';
 import { boundAssets, confirmedResult, missingAssets } from './asset-service';
 import { ownedMedia } from '../../packages/storage/private-files';
-import { getProvider, assertProvider } from '../../packages/providers/config';
 import { batchShots } from '../../packages/domain/planning';
 import { transaction } from '../../packages/storage/database';
 import type { PromptOutput } from '../../packages/contracts';
@@ -66,7 +65,7 @@ export const registerAssets: Routes = async (app, context) => {
   });
   app.post('/api/tasks/:id/images', async request => {
     const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
-    const input = z.object({ resultId: z.string().uuid(), kind: z.enum(['person', 'scene', 'angle', 'storyboard']), name: z.string().min(1).max(100), prompt: z.string().min(5).max(10000), key: z.string().uuid(), costAccepted: z.literal(true), parentId: z.string().uuid().optional(), batch: z.number().int().positive().optional() }).parse(request.body);
+    const input = z.object({ resultId: z.string().uuid(), kind: z.enum(['person', 'scene', 'angle', 'storyboard']), name: z.string().min(1).max(100), prompt: z.string().min(5).max(10000), key: z.string().uuid(), costAccepted: context.singleUserMode ? z.boolean().optional() : z.literal(true), parentId: z.string().uuid().optional(), batch: z.number().int().positive().optional() }).parse(request.body);
     const task = await taskRow(context, id, request.user.id); const result = await confirmedResult(context, id, input.resultId);
     const existing = await boundAssets(context, id, input.resultId);
     if (input.kind !== 'storyboard' && input.batch !== undefined) throw new AppError(400, '人物、角度和场景是全局参考，不能只生成某一批');
@@ -90,11 +89,7 @@ export const registerAssets: Routes = async (app, context) => {
       for (const asset of existing.filter(x => ['person', 'scene'].includes(x.kind) && !x.stale)) { refs.push(asset.mediaId); referenceAssetIds.push(asset.id); }
       prompt += `\n这是第 ${batch.number} 批的故事面板参考图，不是实际视频尾帧。产品、人物与场景分别按输入参考保持一致。\n${result.output.globalPrompt}\n${batch.shots.map((s, i) => `第${i + 1}格：${s.prompt}`).join('\n')}`;
     }
-    let provider;
-    try { provider = assertProvider(await getProvider(context, 'image'), 'image'); } catch (error) { throw new AppError(409, (error as Error).message); }
     const uniqueRefs = [...new Set(refs)];
-    if (uniqueRefs.length && !provider.references) throw new AppError(409, '图片接口未确认支持参考图编辑');
-    if (uniqueRefs.length > 1 && !provider.multiReference) throw new AppError(409, '本次需要多张参考图，当前图片接口能力不足');
     return enqueue(context, request.user.id, id, 'image', input.key, { ...input, prompt, referenceMediaIds: uniqueRefs, referenceAssetIds });
   });
   app.post('/api/tasks/:id/continuation', async request => {

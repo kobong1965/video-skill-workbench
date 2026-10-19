@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { workPath } from '../packages/storage/backup';
 
-export const windowsPayload = ['apps/api', 'apps/worker', 'packages', 'database/migrations', 'scripts/postgres.ts', 'scripts/desktop-service.ts', 'scripts/windows-package.ts', 'package.json', 'package-lock.json'] as const;
+export const windowsPayload = ['apps/api', 'apps/worker', 'packages', 'database/migrations', 'scripts/postgres.ts', 'scripts/desktop-service.ts', 'scripts/service-shutdown.ts', 'scripts/service-child.ts', 'scripts/windows-package.ts', 'package.json', 'package-lock.json'] as const;
+export const windowsNotices = ['THIRD-PARTY-NOTICES.md'] as const;
 
 export const windowsWebInput = windowsOutput;
 
@@ -26,6 +27,7 @@ export function windowsRuntimeEnvironment(packageRoot: string, dataRoot: string)
     VSW_PG_PACKAGE: path.join(root, 'runtime/embedded-postgres/dist/index.js'),
     VSW_PG_CLIENT_ROOT: path.join(root, 'runtime/pg-client/bin'),
     VSW_OUTPUT_ROOT: path.join(root, 'web'),
+    LIBTV_CLI_PATH: path.join(root, 'runtime/libtv.exe'),
     VSW_SERVE_STATIC: '1',
     TEMP: 'E:/Codex工作盘/temp/video-skill-workbench/desktop',
     TMP: 'E:/Codex工作盘/temp/video-skill-workbench/desktop',

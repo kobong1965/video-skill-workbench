@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { windowsOutput, windowsPayload, windowsRuntimeEnvironment, windowsWebInput, distributableFile } from '../../scripts/windows-package';
+import { windowsOutput, windowsPayload, windowsNotices, windowsRuntimeEnvironment, windowsWebInput, distributableFile } from '../../scripts/windows-package';
 
 it('Windows 包只写明确的独立产物子目录，不写源码或数据根', () => {
   expect(windowsOutput('E:/Codex工作盘/artifacts/test-builds/video-skill-workbench/windows-0.1.1')).toContain('windows-0.1.1');
@@ -26,10 +26,15 @@ it('分发只取程序白名单，既有数据、会话、密钥和测试产物�
   expect(windowsPayload.some(name => /secrets|dataRoot|media|\.env|profile/.test(name))).toBe(false);
 });
 
+it('发行包保留使用到的第三方界面代码许可说明', () => {
+  expect(windowsNotices).toContain('THIRD-PARTY-NOTICES.md');
+});
+
 it('包内运行环境绑定包内工具，沿用指定的 E 盘资料且不指向开发源码', () => {
   const env = windowsRuntimeEnvironment('E:/Codex工作盘/artifacts/latest/video-skill-workbench/windows', 'E:/Codex工作盘/projects/video-skill-workbench-data');
   expect(env.VSW_PG_PACKAGE).toContain('windows');
   expect(env.VSW_DATA_ROOT).toContain('video-skill-workbench-data');
   expect(env.TEMP).toContain('Codex工作盘');
+  expect(env.LIBTV_CLI_PATH).toBe('E:\\Codex工作盘\\artifacts\\latest\\video-skill-workbench\\windows\\runtime\\libtv.exe');
   expect(() => windowsRuntimeEnvironment('C:/app', 'C:/data')).toThrow();
 });

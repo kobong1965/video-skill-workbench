@@ -1,4 +1,4 @@
-import { test, expect, type Browser, type BrowserContext, type BrowserContextOptions, type Locator, type Page, type TestInfo } from '@playwright/test';
+import { test, expect, type Browser, type BrowserContext, type BrowserContextOptions, type Locator, type Page, type TestInfo } from './fixtures';
 
 const skillName = '显示适配测试｜深灰阔腿裤与完整对标视频确认版';
 const draftName = '显示适配草稿｜较长的商品名称与版本说明也应该清晰完整地阅读';
@@ -140,6 +140,17 @@ async function openSettings(page: Page) {
   await expect(page.getByRole('table')).toBeVisible();
 }
 
+async function openCreationSettings(page: Page) {
+  await page.getByLabel('上传商品图', { exact: true }).setInputFiles(`${process.env.VSW_TEST_ROOT}/sample-product.png`);
+  await expect(page.getByLabel('图片 1 用途')).toBeVisible();
+  await page.getByRole('button', { name: `选择脚本：${skillName}`, exact: true }).click();
+  await page.getByRole('button', { name: '下一步', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: '生成设置' });
+  await expect(dialog.getByRole('heading', { name: '常规设置', exact: true })).toBeVisible();
+  await dialog.locator('summary').filter({ hasText: '高级设置' }).click();
+  await expect(dialog.getByLabel('商品名称', { exact: true })).toBeVisible();
+}
+
 test('正文、辅助文字、控件、标题及表格使用统一可读尺寸', async ({ browser }, info) => {
   const context = await displayContext(browser, { viewport: { width: 2560, height: 1440 } });
   const page = await context.newPage();
@@ -155,9 +166,7 @@ test('正文、辅助文字、控件、标题及表格使用统一可读尺寸',
     expect.soft(body.font).toBeLessThanOrEqual(18);
     expect.soft(body.lineHeight).toBeGreaterThanOrEqual(1.5);
     expect.soft(body.lineHeight).toBeLessThanOrEqual(1.7);
-    await page.locator('summary').filter({ hasText: '更多设置' }).click();
-    await page.getByLabel('上传商品图', { exact: true }).setInputFiles(`${process.env.VSW_TEST_ROOT}/sample-product.png`);
-    await expect(page.getByLabel('图片 1 用途')).toBeVisible();
+    await openCreationSettings(page);
     await assertReadable(page, 'creation', info);
     const content = await page.locator('.workspace-main').evaluate(element => {
       const box = element.getBoundingClientRect();
@@ -168,6 +177,8 @@ test('正文、辅助文字、控件、标题及表格使用统一可读尺寸',
     expect.soft(content.width, '2K content is bounded rather than stretching across the whole monitor').toBeLessThanOrEqual(1800);
     expect.soft(Math.abs(content.leftSpace - content.rightSpace), 'main area is centered in the available space').toBeLessThanOrEqual(2);
     await assertFits(page, 'creation-2560', info);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog', { name: '生成设置' })).toHaveCount(0);
     await openSettings(page);
     await assertReadable(page, 'settings-table', info);
     const input = page.getByLabel('preview-admin文字总额度');
@@ -209,9 +220,11 @@ for (const display of displays) {
       await page.goto('/');
       await expect(page.getByRole('button', { name: `选择脚本：${skillName}`, exact: true })).toBeVisible();
       expect(await page.evaluate(() => devicePixelRatio)).toBe(display.dpr);
-      await page.locator('summary').filter({ hasText: '更多设置' }).click();
+      await openCreationSettings(page);
       await expect(page.getByLabel('发布平台')).toBeVisible();
       await assertFits(page, `${display.name}-creation`, info);
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('dialog', { name: '生成设置' })).toHaveCount(0);
       await page.goto('/#library');
       const card = page.getByRole('article').filter({ has: page.getByRole('heading', { name: skillName, exact: true }) });
       await expect(card).toBeVisible();

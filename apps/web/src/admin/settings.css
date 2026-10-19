@@ -1,0 +1,13 @@
+.provider-pool-heading { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); }
+.provider-pool-heading h2, .execution-settings h2 { margin: 0 0 var(--space-2); }
+.provider-pool-heading p { margin: 0; max-width: var(--reading-max); }
+.provider-pool-heading > div { flex: 1 1 24rem; }
+.provider-node .panel-header { align-items: start; }
+.provider-node-state { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3); }
+.provider-node-state > .muted { font-size: var(--text-secondary); }
+.provider-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.provider-pool-footer { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3); }
+.provider-pool-footer small { flex: 1 1 20rem; }
+.execution-settings-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-4); }
+.execution-settings-row > label { flex: 1 1 18rem; max-width: 32rem; }
+@media (max-width: 48rem) { .provider-node-state { width: 100%; } .execution-settings-row > label { max-width: none; } }

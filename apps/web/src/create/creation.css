@@ -1,0 +1,107 @@
+.creation-workspace { min-width: 0; }
+.creation-composer { display: grid; gap: var(--space-6); padding: var(--space-6); }
+.creation-composer-actions { position: sticky; top: 0; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) 0; padding: var(--space-4) var(--space-6); background: var(--paper); border-bottom: 1px solid var(--line); border-radius: var(--radius-card) var(--radius-card) 0 0; }
+.creation-composer-actions > .inline { flex: 0 0 auto; margin-left: auto; gap: var(--space-2); }
+.creation-composer-actions button { white-space: nowrap; }
+.creation-composer-actions .primary { min-width: 8rem; }
+.creation-next-hint { color: var(--muted); font-size: var(--text-secondary); }
+
+.creation-product { padding: var(--space-4); background: var(--surface-subtle); border: 1px solid var(--line); border-radius: var(--radius-card); min-width: 0; }
+.creation-product .panel-header { margin-bottom: var(--space-3); }
+.creation-product .uploader { min-height: 9rem; gap: var(--space-2); padding: var(--space-4); border-radius: var(--radius-control); }
+.creation-product .drop-instruction, .creation-product .upload-filenames { display: none; }
+.creation-product .product-grid { gap: var(--space-3); }
+.creation-product .product-tile { width: 8rem; }
+.creation-product .product-tile img { height: 7rem; box-shadow: none; }
+.creation-product .product-tile select { min-height: var(--control-compact); font-size: var(--text-control); }
+.creation-product .product-tile button { min-height: var(--control-compact); padding: var(--space-1); }
+.creation-product .product-grid .file-dropzone { flex: 0 0 9rem; }
+.creation-product .product-grid .file-dropzone .uploader { min-height: 11rem; height: 100%; }
+
+.creation-skill-picker { min-width: 0; }
+.creation-picker-header { gap: var(--space-3); }
+.creation-picker-header .inline { gap: var(--space-2); }
+.creation-picker-title > small { display: grid; place-items: center; padding: 0 var(--space-2); min-width: 1.75rem; min-height: 1.75rem; background: var(--surface); border-radius: 2rem; font-family: var(--font-data); }
+.creation-skill-viewport { max-height: 37.5rem; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: var(--space-1); min-height: 15rem; border-radius: var(--radius-control); }
+.creation-skill-empty { display: grid; place-items: center; min-height: 15rem; color: var(--muted); }
+.creation-workspace .compact-skill-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5rem), 1fr)); gap: var(--space-3); }
+.creation-workspace .compact-skill-card { position: relative; display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3) 0 0; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-card); transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.creation-workspace .compact-skill-card:hover { border-color: var(--focus); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.creation-workspace .compact-skill-card.selected { background: var(--accent-soft); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.creation-workspace .compact-skill-card .skill-select-button { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; padding: var(--space-3); border-radius: 0 0 var(--radius-card) var(--radius-card); align-items: stretch; flex: 1; color: var(--ink); background: transparent; }
+.creation-workspace .compact-skill-card .skill-select-button:hover:not(:disabled) { background: var(--surface-subtle); }
+.creation-workspace .compact-skill-card .skill-select-button:disabled { background: transparent; color: var(--muted); }
+.creation-workspace .compact-skill-card .card-meta { position: absolute; top: var(--space-5); right: var(--space-5); z-index: 2; display: flex; justify-content: flex-end; pointer-events: none; }
+.creation-workspace .compact-skill-card .duration { padding: var(--space-1) var(--space-2); font-size: var(--text-secondary); line-height: 1.4; background: var(--ink); color: var(--paper); border-radius: 2rem; }
+.creation-workspace .compact-skill-card .skill-card-copy { min-height: 3.375rem; }
+.creation-workspace .compact-skill-card .skill-card-title { font-size: var(--text-subsection); margin: 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.creation-workspace .compact-skill-card .card-bottom { justify-content: flex-end; padding-top: 0; gap: var(--space-1); margin-top: auto; }
+.creation-workspace .compact-skill-card .select-mark { width: 1.75rem; height: 1.75rem; color: var(--link); }
+.creation-workspace .compact-skill-card .select-mark svg { width: 1rem; height: 1rem; }
+.creation-workspace .compact-skill-card.selected .select-mark { color: var(--paper); background: var(--accent); border-color: transparent; }
+.creation-workspace .compact-skill-card .skill-preview-thumb { position: relative; align-self: center; width: calc(100% - var(--space-6)); height: auto; aspect-ratio: 3 / 4; flex: 0 0 auto; margin: 0; border-radius: var(--radius-preview); }
+.creation-workspace .compact-skill-card .skill-preview-action { padding-bottom: 0; }
+.creation-workspace .compact-skill-card .preview-play { width: 2.75rem; height: 2.75rem; background: #202536a8; border: 1px solid #ffffffb3; backdrop-filter: blur(8px); transition: transform 180ms ease, background 180ms ease; }
+.creation-workspace .compact-skill-card .preview-play svg { width: 1.125rem; height: 1.125rem; fill: currentColor; }
+.creation-workspace .compact-skill-card .skill-preview-thumb:hover .preview-play { transform: scale(1.06); background: #202536d9; }
+.creation-workspace .compact-skill-card .skill-preview-caption { padding: var(--space-1) var(--space-2); background: #202536d9; font-size: var(--text-secondary); }
+.creation-selection-row { margin-top: var(--space-3); font-size: var(--text-secondary); color: var(--muted); }
+.creation-selection-row .check-label { font-size: var(--text-secondary); color: var(--ink); }
+.creation-reference-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); border-top: 1px solid var(--line); padding-top: var(--space-2); font-size: var(--text-secondary); }
+.creation-reference-row > span { min-width: 0; overflow-wrap: anywhere; }
+
+/* From Uiverse.io by mrhyddenn: input:checked + track and translated thumb.
+   Adapted to the app tokens, shorter feedback and native, clickable inputs. */
+.creation-combine-check, .creation-asset-switch { position: relative; cursor: pointer; }
+.creation-combine-check > input, .creation-asset-switch > input { position: absolute; top: 50%; left: 0; transform: translateY(-50%); opacity: 0; min-height: 0; padding: 0; margin: 0; border: 0; z-index: 1; cursor: inherit; }
+.creation-combine-check > input { width: 1.375rem; height: 1.375rem; }
+.creation-asset-switch > input { width: 2.75rem; height: 1.625rem; }
+.creation-check-box { display: grid; place-items: center; width: 1.375rem; height: 1.375rem; flex: 0 0 auto; background: var(--paper); border: 1.5px solid var(--line-interactive); border-radius: .375rem; transition: background 180ms ease, border-color 180ms ease; }
+.creation-check-box svg { width: 1rem; height: 1rem; opacity: 0; transform: scale(.7); transition: opacity 150ms ease, transform 180ms ease; }
+.creation-combine-check > input:checked + .creation-check-box { color: var(--paper); background: var(--accent); border-color: var(--accent); }
+.creation-combine-check > input:checked + .creation-check-box svg { opacity: 1; transform: scale(1); }
+.creation-combine-check > input:focus-visible + .creation-check-box, .creation-asset-switch > input:focus-visible + .creation-switch-track { outline: 3px solid var(--focus); outline-offset: 3px; }
+.creation-combine-check:has(input:disabled), .creation-asset-switch:has(input:disabled) { cursor: not-allowed; color: var(--muted); }
+.creation-combine-check > input:disabled + .creation-check-box, .creation-asset-switch > input:disabled + .creation-switch-track { opacity: .55; }
+.creation-switch-track { width: 2.75rem; height: 1.625rem; flex: 0 0 auto; border: 1px solid var(--line-interactive); border-radius: 2rem; background: var(--surface); position: relative; transition: background 180ms ease, border-color 180ms ease; }
+.creation-switch-track:after { content: ''; position: absolute; top: .1875rem; left: .1875rem; width: 1.125rem; height: 1.125rem; border-radius: 50%; background: var(--paper); box-shadow: 0 1px 3px #20253626; transition: transform 180ms ease; }
+.creation-asset-switch > input:checked + .creation-switch-track { background: var(--accent); border-color: var(--accent); }
+.creation-asset-switch > input:checked + .creation-switch-track:after { transform: translateX(1.125rem); }
+
+.creation-settings-form { display: grid; gap: var(--space-5); }
+.creation-settings-form > fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.creation-settings-form .modal-footer { position: sticky; bottom: calc(-1 * var(--space-8)); margin: 0 calc(-1 * var(--space-8)) calc(-1 * var(--space-8)); padding: var(--space-4) var(--space-8); border-top: 1px solid var(--line); border-radius: 0 0 var(--radius-modal) var(--radius-modal); background: var(--paper); z-index: 2; }
+.creation-settings-form .modal-footer .primary { min-width: 7rem; }
+.creation-settings h3 { margin-bottom: 0; }
+.creation-settings .form-stack { gap: var(--space-4); }
+.creation-settings .checkbox-row { display: flex; flex-wrap: wrap; gap: var(--space-6); padding-top: var(--space-1); }
+.creation-advanced { border-radius: var(--radius-card); background: var(--surface-subtle); }
+.creation-advanced > summary { padding: var(--space-3) var(--space-4); }
+.creation-advanced > div { padding: 0 var(--space-4) var(--space-4); }
+.creation-advanced textarea { min-height: 6rem; }
+.creation-selected-skills { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface-subtle); }
+.creation-selected-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.creation-selected-item > span { font-weight: var(--weight-strong); min-width: 0; overflow-wrap: anywhere; }
+.creation-selected-item .inline { gap: var(--space-3); }
+.creation-selected-item input { width: 6rem; min-height: var(--control-compact); }
+.creation-selected-item button { font-size: var(--text-control); }
+@media (max-width: 1100px) {
+  .creation-settings .field-grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .creation-settings-form .modal-footer { bottom: calc(-1 * var(--space-5)); margin: 0 calc(-1 * var(--space-5)) calc(-1 * var(--space-5)); padding: var(--space-4) var(--space-5); }
+}
+@media (max-width: 720px) {
+  .creation-composer { padding: var(--space-3); gap: var(--space-4); }
+  .creation-composer-actions { margin: calc(-1 * var(--space-3)) calc(-1 * var(--space-3)) 0; padding: var(--space-3); }
+  .creation-product { padding: var(--space-3); }
+  .creation-settings .field-grid, .creation-settings .field-grid.three { grid-template-columns: minmax(0, 1fr); }
+  .creation-skill-viewport { max-height: 32rem; }
+}
+@media (max-width: 480px) {
+  .creation-settings-form .modal-footer { bottom: calc(-1 * var(--space-4)); margin: 0 calc(-1 * var(--space-4)) calc(-1 * var(--space-4)); padding: var(--space-3) var(--space-4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .creation-workspace .compact-skill-card, .creation-workspace .compact-skill-card:hover { transform: none; }
+  .creation-workspace .compact-skill-card .preview-play, .creation-workspace .compact-skill-card .skill-preview-thumb:hover .preview-play { transform: none; }
+}

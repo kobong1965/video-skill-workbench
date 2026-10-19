@@ -7,7 +7,7 @@ import { claimJob, runJob } from '../apps/worker/queue';
 
 if (!process.env.VSW_TEST_ROOT) throw new Error('测试服务器只能从独立测试入口启动');
 const port = Number(process.env.VSW_E2E_PORT ?? 4188);
-const h = await harness('browser', `http://127.0.0.1:${port}`); h.context.testMode = true;
+const h = await harness('browser', `http://127.0.0.1:${port}`, process.env.VSW_SINGLE_USER_E2E === '1'); h.context.testMode = true;
 const user = await h.account('admin');
 await h.db.query("UPDATE users SET username='e2e-admin',display_name='试用测试账号' WHERE id=$1", [user.id]);
 const previewUser = await h.account('admin');

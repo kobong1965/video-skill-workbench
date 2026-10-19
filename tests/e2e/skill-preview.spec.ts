@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 import { readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { zipSync, strToU8 } from 'fflate';
@@ -82,7 +82,7 @@ test('卡片支持视频播放、图片预览、空状态和失败反馈，预�
   }
   await page.route(`**/api/media/${picture.id}`, route => route.fulfill({ status: 404, body: 'missing test media' }));
   await imageButton.click();
-  await expect(page.getByRole('alert')).toContainText('素材暂时无法显示');
+  await expect(page.getByRole('dialog').getByRole('alert')).toContainText('素材暂时无法显示');
   await page.getByRole('button', { name: '关闭窗口', exact: true }).click();
   await expect(select).toHaveAttribute('aria-pressed', 'true');
   expect(errors).toEqual([]);

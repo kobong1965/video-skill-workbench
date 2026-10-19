@@ -2,7 +2,7 @@ import { access, lstat, mkdir, cp, copyFile, readFile, writeFile, readdir } from
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
-import { windowsOutput, windowsPayload, windowsWebInput, distributableFile } from './windows-package';
+import { windowsOutput, windowsPayload, windowsNotices, windowsWebInput, distributableFile } from './windows-package';
 import { buildNative } from './build-native';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -14,12 +14,14 @@ function argument(name: string) {
 }
 const output = windowsOutput(argument('--output-root'));
 const web = windowsWebInput(argument('--web-root'));
+const libtvCli = argument('--libtv-cli');
+if (!path.isAbsolute(libtvCli) || !libtvCli.toLowerCase().startsWith(path.resolve('E:/Codex工作盘/runtimes').toLowerCase() + path.sep)) throw new Error('LibTV CLI 必须来自明确的 E 盘运行时目录');
 const sdk = 'E:/Codex工作盘/caches/video-skill-workbench/webview2-1.0.4191.47';
 const temp = 'E:/Codex工作盘/temp/video-skill-workbench/windows-package';
 const nodeLicense = 'E:/Codex工作盘/downloads/source-packages/video-skill-workbench-display-0.1.6/node-v24.21.0-LICENSE.txt';
 const brandIcon = path.join(project, 'desktop/branding/workbench.ico');
 if (process.version !== 'v24.21.0') throw new Error('请使用已校验的 Node 24.21.0 LTS 及匹配许可打包');
-for (const required of [nodeLicense, brandIcon, path.join(web, 'index.html'), path.join(sdk, 'LICENSE.txt')]) await access(required);
+for (const required of [nodeLicense, brandIcon, libtvCli, path.join(web, 'index.html'), path.join(sdk, 'LICENSE.txt')]) await access(required);
 async function safeCopy(source: string, destination: string) {
   await cp(source, destination, { recursive: true, errorOnExist: true, force: false, filter: async current => {
     if ((await lstat(current)).isSymbolicLink()) throw new Error('不将链接打入发行包');
@@ -50,12 +52,14 @@ await safeCopy(path.join(web, 'index.html'), path.join(output, 'web/index.html')
 await safeCopy(path.join(web, 'assets'), path.join(output, 'web/assets'));
 await mkdir(path.join(output, 'runtime'));
 await copyFile(process.execPath, path.join(output, 'runtime/node.exe'));
+await copyFile(libtvCli, path.join(output, 'runtime/libtv.exe'));
 await copyFile(nodeLicense, path.join(output, 'runtime/Node-LICENSE.txt'));
 await safeCopy('E:/Codex工作盘/runtimes/video-skill-workbench/node_modules/@embedded-postgres/windows-x64', path.join(output, 'runtime/embedded-postgres'));
 await safeCopy('E:/Codex工作盘/runtimes/video-skill-workbench/pg-client', path.join(output, 'runtime/pg-client'));
 await copyFile(path.join(sdk, 'LICENSE.txt'), path.join(output, 'WebView2-LICENSE.txt'));
 await copyFile(path.join(project, 'desktop/start-service.ps1'), path.join(output, 'start-service.ps1'));
 await copyFile(path.join(project, 'desktop/使用说明.txt'), path.join(output, '使用说明.txt'));
+for (const notice of windowsNotices) await copyFile(path.join(project, notice), path.join(output, notice));
 const executable = path.join(output, '视频Skill工作台.exe');
 await copyFile(brandIcon, path.join(output, 'workbench.ico'));
 await writeFile(path.join(output, 'release.json'), JSON.stringify({ id: randomUUID(), version }), { flag: 'wx' });

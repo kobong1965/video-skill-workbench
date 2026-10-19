@@ -1,0 +1,5 @@
+.history-task-summary { display: flex; align-items: center; gap: var(--space-4); min-width: 0; flex: 1; }
+.history-task-copy { min-width: 0; }
+.history-task-copy h3 { overflow-wrap: anywhere; }
+.history-task-row .row-actions { flex-shrink: 0; }
+@media (max-width: 48rem) { .history-task-row { flex-wrap: wrap; } .history-task-row .row-actions { margin-left: auto; } }

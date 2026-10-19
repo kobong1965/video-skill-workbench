@@ -1,0 +1,142 @@
+.result-toolbar {
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.result-heading {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.result-heading h2 {
+  margin: 0 0 var(--space-2);
+}
+
+.result-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.result-toolbar-actions button,
+.prompt-editor-actions button {
+  min-height: var(--control-compact);
+  white-space: nowrap;
+}
+
+.result-version {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: min(100%, 24rem);
+  margin-bottom: var(--space-4);
+  color: var(--muted);
+  font-size: var(--text-secondary);
+}
+
+.result-version > span {
+  flex-shrink: 0;
+}
+
+.result-version select {
+  flex: 1 1 auto;
+  width: auto;
+  min-height: var(--control-compact);
+  color: var(--ink);
+}
+
+.prompt-editor-panel {
+  min-width: 0;
+  padding: 0;
+  border-radius: var(--radius-modal);
+  background: var(--paper);
+}
+
+.prompt-editor-header {
+  margin: 0;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--line);
+  gap: var(--space-4);
+  border-radius: var(--radius-modal) var(--radius-modal) 0 0;
+  background: linear-gradient(115deg, var(--paper), var(--surface));
+}
+
+.prompt-editor-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.prompt-editor-title .tag {
+  font-weight: var(--weight-medium);
+}
+
+.prompt-editor-panel .prompt-document {
+  display: block;
+  width: 100%;
+  height: max(32rem, calc(100vh - 24rem));
+  min-height: 24rem;
+  max-width: 100%;
+  border: 0;
+  border-radius: 0 0 var(--radius-modal) var(--radius-modal);
+  box-shadow: none;
+  background: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.8;
+  padding: var(--space-6);
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
+.prompt-editor-panel .prompt-document:focus-visible {
+  outline-offset: -3px;
+}
+
+.prompt-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.prompt-editor-actions .message {
+  margin: 0;
+  width: 100%;
+}
+
+@media (max-width: 48rem) {
+  .result-toolbar-actions {
+    justify-content: flex-start;
+  }
+  .prompt-editor-header,
+  .prompt-editor-panel .prompt-document {
+    padding: var(--space-4);
+  }
+  .prompt-editor-header {
+    align-items: flex-start;
+  }
+  .prompt-editor-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 30rem) {
+  .prompt-editor-panel {
+    padding: 0;
+  }
+  .result-toolbar > .result-toolbar-actions {
+    width: 100%;
+  }
+  .prompt-editor-actions {
+    width: 100%;
+  }
+}

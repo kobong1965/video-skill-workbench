@@ -18,6 +18,13 @@ describe('创作卡片预览素材', () => {
   it('仅有图片时提供图片预览，不伪装成视频', () => {
     expect(getSkillPreview([image])).toEqual({ image, video: undefined });
   });
+  it('预览目录图片优先于普通封面，预览目录的显式封面又优先于普通预览图', () => {
+    const assetCover = { ...image, path: 'assets/cover.png', mediaId: 'asset-cover' };
+    const shot = { ...image, path: 'previews/shot.png', mediaId: 'preview-shot' };
+    const poster = { ...image, path: 'previews/poster.png', mediaId: 'preview-poster' };
+    expect(getSkillPreview([assetCover, image, shot])?.image).toEqual(shot);
+    expect(getSkillPreview([assetCover, shot, poster])?.image).toEqual(poster);
+  });
   it('仅有视频时无需封面也能播放', () => {
     expect(getSkillPreview([video])).toEqual({ video, image: undefined });
   });

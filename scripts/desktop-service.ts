@@ -1,4 +1,5 @@
-import { spawn, type ChildProcess } from 'node:child_process';
+import type { ChildProcess } from 'node:child_process';
+import { shutdownServices, spawnManagedService } from './service-shutdown';
 import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -25,18 +26,18 @@ const context = await runtimeContext();
 await context.db.end();
 const children: ChildProcess[] = [];
 let stopping = false;
-function start(entry: string) {
-  const child = spawn(process.execPath, ['--import', 'tsx', entry], { cwd: serverRoot, env: process.env, windowsHide: true, stdio: 'inherit' });
+function start(entry: 'apps/api/main.ts' | 'apps/worker/main.ts') {
+  const child = spawnManagedService(entry, { cwd: serverRoot, env: process.env });
   children.push(child);
   child.once('exit', () => { if (!stopping) { console.error('本机后台进程已停止，重新打开软件可恢复，数据未重置。'); void stop(); } });
 }
 async function stop() {
   if (stopping) return;
   stopping = true;
-  for (const child of children) if (child.exitCode === null) child.kill('SIGTERM');
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  await database.stop();
-  process.exit(0);
+  try {
+    await shutdownServices(children, [], () => database.stop());
+    process.exit(0);
+  } catch { console.error('后台仍在安全收尾，数据库未强制关闭；请保留程序并检查日志。'); }
 }
 start('apps/api/main.ts'); start('apps/worker/main.ts');
 process.on('SIGINT', () => { void stop(); }); process.on('SIGTERM', () => { void stop(); });

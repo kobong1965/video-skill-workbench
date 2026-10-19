@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Database } from '../../packages/storage/database';
 import type { User } from '../../packages/contracts';
 
-export interface AppContext { db: Database; dataRoot: string; masterKey: string; setupKey: string; origin: string; testMode?: boolean; }
+export interface AppContext { db: Database; dataRoot: string; masterKey: string; setupKey: string; origin: string; testMode?: boolean; singleUserMode?: boolean; }
 export interface AuthRequest extends FastifyRequest { user: User; csrf: string; }
 declare module 'fastify' { interface FastifyRequest { user: User; csrf: string; } }
 export class AppError extends Error { constructor(public statusCode: number, message: string) { super(message); } }

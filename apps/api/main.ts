@@ -12,5 +12,12 @@ if (process.env.VSW_SERVE_STATIC === '1') {
 await app.listen({ host: '127.0.0.1', port: Number(process.env.VSW_PORT ?? 4178) });
 console.log(`工作台已就绪：${context.origin}`);
 console.log(`首次安装码文件：${context.dataRoot}/本机安装码.txt`);
-async function stop() { await app.close(); await context.db.end(); process.exit(0); }
-process.on('SIGINT', () => { void stop(); }); process.on('SIGTERM', () => { void stop(); });
+let shutdown: Promise<void> | undefined;
+function stop() {
+  return shutdown ??= (async () => {
+    // Fastify rejects new intake before waiting for requests and onClose hooks.
+    await app.close(); await context.db.end(); process.exit(0);
+  })();
+}
+const requestStop = () => { void stop().catch(() => console.error('API关闭尚未完成；正在保留现有任务和数据库连接。')); };
+process.on('SIGINT', requestStop); process.on('SIGTERM', requestStop);
