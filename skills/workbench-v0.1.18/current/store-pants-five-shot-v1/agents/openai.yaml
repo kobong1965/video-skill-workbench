@@ -1,0 +1,4 @@
+interface:
+  display_name: "服装店五镜裤装"
+  short_description: "沿用已验证的12.63秒服装店五镜头，按新裤图换款并输出完整中文提示词"
+  default_prompt: "请使用 $store-pants-five-shot，根据我上传的新裤子产品图，沿用服装店五镜裤装方案，直接给出完整中文 Seedance 提示词。"

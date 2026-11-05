@@ -16,6 +16,7 @@ import { useReferenceVideoRequirement } from './useReferenceVideoRequirement';
 import { ProductSetPicker } from './ProductSetPicker';
 import { productSetsPatch, productUsePatch, productGroupsError, removeProductImage } from '../products/product-set-selection';
 import { ProductGroups } from './ProductGroups';
+import { groupSelectionUrl, type ProductChoice } from '../products/product-choice';
 import './creation.css';
 
 const isCreationRoute = () => !location.hash || location.hash === '#' || location.hash === '#create';
@@ -60,7 +61,7 @@ export function Creation({ initial: supplied }: { initial: CreationStart }) {
   const groupLabels = new Map<string, string[]>();
   input.productGroups?.forEach(group => group.mediaIds.forEach(id => groupLabels.set(id, [...(groupLabels.get(id) ?? []), group.styleNumber])));
 
-  function loadProductSets(sets: ProductImageSet[]) {
+  function loadProductSets(sets: ProductChoice[]) {
     if (!mounted.current || !isCreationRoute()) return;
     const use = sets.length > 1 ? input.productUse ?? 'colors' : 'colors';
     const patch = productSetsPatch(sets, use, input);
@@ -77,7 +78,7 @@ export function Creation({ initial: supplied }: { initial: CreationStart }) {
       const stillUsed = new Set(groups.flatMap(group => group.mediaIds));
       const media = input.media.filter(file => !removeIds.includes(file.id) || stillUsed.has(file.id));
       const nextUse = groups.length > 1 ? use : 'colors';
-      const canonical = await Promise.all(groups.map(group => api<ProductImageSet>(`/api/product-sets/${group.productSetId}`)));
+      const canonical = await Promise.all(groups.map(group => api<ProductChoice>(groupSelectionUrl(group))));
       const patch = groups.length ? productUsePatch({ ...input, media, productGroups: groups }, nextUse, canonical) : { media, productGroups: undefined, productUse: undefined };
       if (!mounted.current || !isCreationRoute()) return;
       setInput(value => ({ ...value, ...patch, productSetId: groups.length === 1 ? groups[0].productSetId : undefined, styleNumber: groups.length === 1 ? groups[0].styleNumber : undefined, productName: groups.map(group => group.name || group.styleNumber).join(' / ').slice(0, 100), name: '', facts: '', extra: '' }));
@@ -181,7 +182,7 @@ export function Creation({ initial: supplied }: { initial: CreationStart }) {
     </section>
 
     {references.notice ? <ReferenceVideoNotice skill={references.notice} onConfirm={() => { references.accept(references.notice!); setPreviousSelection(null); }} onCancel={() => { const version = references.notice!.versionId; references.setReview(null); update(previousSelection ?? { selections: input.selections.filter(item => item.versionId !== version) }); setPreviousSelection(null); }}/> : null}
-    {productPickerOpen ? <ProductSetPicker initialIds={input.productGroups?.map(group => group.productSetId) ?? (input.productSetId ? [input.productSetId] : [])} onChoose={loadProductSets} onClose={() => setProductPickerOpen(false)}/> : null}
+    {productPickerOpen ? <ProductSetPicker allowCatalog={singleUser && user.role === 'admin'} initialGroups={input.productGroups} initialIds={input.productSetId ? [input.productSetId] : []} onChoose={loadProductSets} onClose={() => setProductPickerOpen(false)}/> : null}
     {settingsOpen ? <Modal title="生成设置" onClose={() => { if (!busy) setSettingsOpen(false); }}>
       <form className="creation-settings-form" onSubmit={event => { event.preventDefault(); void generate(); }}>
         <SelectedSkills items={selected} combine={combine} disabled={busy} update={selections => update({ selections })}/>

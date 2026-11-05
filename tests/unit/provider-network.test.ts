@@ -88,7 +88,7 @@ describe('生成服务超时与连接回退', () => {
     ['ERR_TLS_CERT_ALTNAME_INVALID', 'TLS'],
   ])('保留可诊断原因%s且不暴露第三方错误中的密钥', async (code, message) => {
     resolve.mockResolvedValue(addresses as never);
-    fetch.mockRejectedValue(new TypeError('fetch failed', { cause: Object.assign(new Error('https://bad.example/?api_key=' + 'secret-key'), { code }) }));
+    fetch.mockRejectedValue(new TypeError('fetch failed', { cause: Object.assign(new Error('https://bad.example/?api_key=secret-key'), { code }) }));
     const failure = await network.requestBytes('https://api.example.com/v1').catch(error => error);
     expect(failure).toMatchObject({ classification: 'unknown', message: expect.stringContaining(message) });
     expect(failure.message).toContain(code);

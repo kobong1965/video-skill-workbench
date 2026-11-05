@@ -26,7 +26,14 @@ productGroups 是用户明确选定的有序商品分组，以每组 mediaIds �
 配音稿与字幕文字一致，台词长度要适合所在镜头时长。商品展示动作必须对应图片确实存在的部位，例如无拉链商品不做拉拉链动作。
 人物和场景生成开关仅决定建议素材清单，不代表授权实际生成。保留真实自然光、风动与物体重量的物理关系，避免所有物体同步抖动。
 结果结构严格为：${JSON.stringify(format)}。所有空列表用 []，所有没有的文本字段用空字符串。不能把示例内容当真实事实。`;
-  const data = JSON.stringify(snapshot);
+  // Platform identities are provenance, not creative instructions. Keep them in
+  // the saved task/canvas record, never in the model request or its derived text.
+  const generationInput = { ...snapshot.input, ...(snapshot.input.productGroups ? {
+    productGroups: snapshot.input.productGroups.map(group => ({
+      styleNumber: group.styleNumber, name: group.name, mediaIds: group.mediaIds,
+    })),
+  } : {}) };
+  const data = JSON.stringify({ ...snapshot, input: generationInput });
   if (data.length > 120000) throw new ProviderError('rejected', '所选脚本资料过长，请减少组合或精简引用后重试');
   // Check before expanding binary pictures into base64 strings.
   assertTextRequestBytes(Buffer.byteLength(instructions + data, 'utf8') + images.reduce((sum, image) => sum + 4 * Math.ceil(image.bytes.length / 3) + 2048, 4096));

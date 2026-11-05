@@ -95,7 +95,7 @@ describe('仅导入 LibTV 工作流', () => {
     expect(() => assertImportCommand(['logout'])).toThrow();
     expect(() => assertImportCommand(['node', '--x', '700', '--y', '0', 'create', '视频', '-t', 'video', '--prompt', '自然光商品展示'])).not.toThrow();
     expect(() => assertImportCommand(['upload', '商品', '-t', 'image', '-p', 'project', '-f', 'E:/managed/product.png'])).not.toThrow();
-    expect(() => assertImportCommand(['project', '0123456789abcdef0123456789abcdef'])).not.toThrow();
+    expect(() => assertImportCommand(['project', '60581fbf922b4ba9b7981186e8f73d21'])).not.toThrow();
   });
   it('必需原对标只连接到使用对应 Skill 的批次', () => {
     const distinct = { ...output, shots: output.shots.map((x, i) => ({ ...x, skillVersionId: `skill-${i + 1}` })) };

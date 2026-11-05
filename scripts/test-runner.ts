@@ -1,10 +1,15 @@
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
-import { mkdir } from 'node:fs/promises';
+import { access, mkdir } from 'node:fs/promises';
 import { localPostgres, freePort } from './postgres';
 
 const mode = process.argv[2] ?? 'unit';
+if (mode === 'e2e') {
+  if (!process.env.VSW_OUTPUT_ROOT) throw new Error('浏览器测试必须指定已构建的 VSW_OUTPUT_ROOT');
+  try { await access(path.join(process.env.VSW_OUTPUT_ROOT, 'index.html')); }
+  catch { throw new Error('浏览器测试页面尚未构建：请先运行 build 并使用相同的 --output-root'); }
+}
 const root = path.join(process.env.VSW_TEMP_ROOT!, 'tests', randomUUID());
 // Only throwaway databases under the test temp root skip slow initdb fsync.
 process.env.VSW_TEST_INIT_NOSYNC = '1';

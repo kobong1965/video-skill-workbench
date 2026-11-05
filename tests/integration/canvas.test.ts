@@ -86,7 +86,65 @@ async function waitFor(id: string) {
   throw new Error(`导入未结束：${info?.status}`);
 }
 
+// Isolate canvas persistence from catalog selection; the API tests cover trusted selection creation.
+async function savedCatalogResult() {
+  const prior = (await h.app.inject({ url: `/api/tasks/${taskId}`, headers: a.headers })).json();
+  const task = (await h.app.inject({ method: 'POST', url: '/api/tasks', headers: a.headers, payload: prior.snapshot.input })).json();
+  const snapshot = structuredClone(prior.snapshot);
+  const selectionId = randomUUID();
+  const catalog = { selectionId, productUid: randomUUID(), category: 'men', sku: 'SKU-9001', name: '蓝色牛仔裤',
+    binding: { shopName: 'DEMOB', market: 'US', productId: '9100000000000001001', productUrl: null, matchStatus: 'image_matched' },
+    sourceHash: 'a'.repeat(64), sourceUpdatedAt: '2026-10-31T00:00:00Z', selectedAt: '2026-11-04T01:00:00Z', assets: [] };
+  snapshot.input.productGroups = [{ source: 'catalog', catalogSelectionId: selectionId, styleNumber: catalog.sku, name: catalog.name, mediaIds: snapshot.media.map((media: { id: string }) => media.id), catalog }];
+  await h.db.query('UPDATE tasks SET snapshot=$2 WHERE id=$1', [task.id, snapshot]);
+  const result = await h.app.inject({ method: 'POST', url: `/api/tasks/${task.id}/results`, headers: a.headers, payload: { output: prior.results[0].output } });
+  expect(result.statusCode).toBe(200);
+  const started = await h.app.inject({ method: 'POST', url: `/api/tasks/${task.id}/canvas-imports`, headers: a.headers, payload: { resultId: result.json().id, projectId: fake.projectId, key: randomUUID() } });
+  expect(started.statusCode).toBe(200);
+  return waitFor(started.json().id);
+}
+
 describe('LibTV 工作流导入 API（模拟官方 CLI，不写远端）', () => {
+  it('商品ID独立写入画布与本地计划，不接入视频且续传不重复创建', async () => {
+    const complete = await savedCatalogResult();
+    expect(complete.status).toBe('succeeded');
+    expect(complete.productBindings?.[0].productId).toBe('9100000000000001001');
+    const recordStep = complete.steps.find(step => step.label.includes('商品资料记录'))!;
+    expect(recordStep?.nodeKey).toBeDefined();
+    const record = fake.nodes.find(node => node.id === recordStep.nodeKey)!;
+    expect(record.data.content).toEqual([expect.stringContaining('商品 ID：9100000000000001001')]);
+    expect(fake.edges.some(edge => edge.source === record.id)).toBe(false);
+    const group = fake.nodes.find(node => node.id === complete.steps.find(step => step.key.startsWith('group:'))?.nodeKey)!;
+    expect(group.data.childNodeIds).toContain(record.id);
+    const stored = (await h.db.query('SELECT * FROM canvas_imports WHERE id=$1', [complete.id])).rows[0];
+    expect(stored.plan.productBindings[0].productId).toBe('9100000000000001001');
+    const beforeNodes = fake.nodes.map(node => structuredClone(node));
+    await h.db.query("UPDATE canvas_imports SET status='unknown' WHERE id=$1", [complete.id]);
+    await h.app.inject({ method: 'POST', url: `/api/canvas/imports/${complete.id}/retry`, headers: a.headers, payload: { key: randomUUID() } });
+    expect((await waitFor(complete.id)).status).toBe('succeeded');
+    expect(fake.nodes).toEqual(beforeNodes);
+    expect(fake.calls.flat().some(value => value === '--run' || value === '-r' || value.startsWith('model='))).toBe(false);
+    expect((await h.db.query('SELECT count(*) FROM jobs')).rows[0].count).toBe('0');
+  });
+  it('用户改过商品记录或把它连入视频时停止核验，不覆盖或擅自断开连线', async () => {
+    const complete = await savedCatalogResult();
+    expect(complete.status).toBe('succeeded');
+    const record = fake.nodes.find(node => node.id === complete.steps.find(step => step.label.includes('商品资料记录'))?.nodeKey)!;
+    const original = record.data.content;
+    record.data.content = ['用户改过的商品记录'];
+    await h.db.query("UPDATE canvas_imports SET status='unknown' WHERE id=$1", [complete.id]);
+    await h.app.inject({ method: 'POST', url: `/api/canvas/imports/${complete.id}/retry`, headers: a.headers, payload: { key: randomUUID() } });
+    expect((await waitFor(complete.id)).error).toContain('商品资料记录已修改');
+    expect(record.data.content).toEqual(['用户改过的商品记录']);
+    record.data.content = original;
+    const videoId = complete.steps.find(step => step.key === 'video:1')!.nodeKey!;
+    const edge = { source: record.id, target: videoId };
+    fake.edges.push(edge);
+    await h.app.inject({ method: 'POST', url: `/api/canvas/imports/${complete.id}/retry`, headers: a.headers, payload: { key: randomUUID() } });
+    expect((await waitFor(complete.id)).error).toContain('商品资料记录被连接');
+    expect(fake.edges).toContainEqual(edge);
+    fake.edges = fake.edges.filter(item => item !== edge);
+  });
   it('归一化当前连接和画布列表，不暴露本机凭据', async () => {
     const connection = (await h.app.inject({ url: '/api/canvas/connection', headers: a.headers })).json();
     expect(connection).toEqual({ available: true, connected: true, version: '1.1.3', accountName: '本地测试账号' });

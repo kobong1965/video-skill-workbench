@@ -1,0 +1,12 @@
+{
+  "source_file": "luhmaro0_原标识已省略.mp4",
+  "source_sha256": "原标识已省略",
+  "container_duration_seconds": 7.451995,
+  "prompt_duration_seconds": 7.45,
+  "user_confirmed_video_scheme": true,
+  "historical_final_prompt_supplied": false,
+  "new_product_image_supplied": false,
+  "new_generation_run": false,
+  "audio_method": "offline ASR and waveform only, no direct listening; generated music is an explicitly disclosed approximation",
+  "created_date": "2026-10-19"
+}

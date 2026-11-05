@@ -4,6 +4,8 @@ import { z } from 'zod';
 import type { CreationInput, ProductImageSet, ProductImageSetMedia } from '../../packages/contracts';
 import { transaction, type Database } from '../../packages/storage/database';
 import { AppError, type Routes } from './context';
+import { ownedCatalogSelection } from './catalog-selection-store';
+import type { CatalogSelection } from '../../packages/contracts/catalog-selection';
 
 const params = z.object({ id: z.string().uuid() });
 const productSetInput = z.object({
@@ -41,19 +43,30 @@ export async function ownedProductSetMetadata(db: Database, id: string, ownerId:
 }
 
 /** Validate current ownership and membership once, then freeze canonical group metadata in the task. */
-export async function normalizeTaskProductGroups(db: Database, input: CreationInput, ownerId: string): Promise<void> {
+type GroupInput = Pick<CreationInput, 'productGroups' | 'productSetId' | 'styleNumber' | 'productUse' | 'media'> & Partial<Pick<CreationInput, 'market'>>;
+export async function normalizeTaskProductGroups(db: Database, input: GroupInput, ownerId: string, draft = false): Promise<void> {
   if (!input.productGroups) {
     if (input.productSetId) input.styleNumber = (await ownedProductSetMetadata(db, input.productSetId, ownerId)).styleNumber;
     return;
   }
   // One statement reads all sets and their bindings at the same database snapshot.
-  const rows = (await db.query(`${selectProductSets} WHERE s.owner_id=$1 AND s.id=ANY($2::uuid[])`, [ownerId, input.productGroups.map(group => group.productSetId)])).rows as ProductImageSet[];
+  const manualGroups = input.productGroups.filter(group => group.source !== 'catalog');
+  const rows = (await db.query(`${selectProductSets} WHERE s.owner_id=$1 AND s.id=ANY($2::uuid[])`, [ownerId, manualGroups.map(group => group.productSetId)])).rows as ProductImageSet[];
   const sets = new Map(rows.map(set => [set.id, set]));
-  if (sets.size !== input.productGroups.length) throw new AppError(404, '款号图套不存在或无权访问');
+  if (sets.size !== manualGroups.length) throw new AppError(404, '款号图套不存在或无权访问');
+  const catalogSets = new Map<string, CatalogSelection>();
+  for (const group of input.productGroups.filter(group => group.source === 'catalog')) {
+    const set = await ownedCatalogSelection(db, group.catalogSelectionId!, ownerId);
+    if (input.market !== 'US') throw new AppError(400, '美区产品表款号只能用于 US 市场创作，请重新选择市场');
+    catalogSets.set(set.id, set);
+  }
+  const identities = [...catalogSets.values()].map(set => JSON.stringify([set.catalog.productUid, set.catalog.binding.market, set.catalog.binding.shopName, set.catalog.binding.productId]));
+  if (new Set(identities).size !== identities.length || catalogSets.size !== input.productGroups.length - manualGroups.length) throw new AppError(400, '不能重复选择同一产品店铺绑定');
   const taskMedia = new Map(input.media.map(item => [item.id, item.role]));
   const canonicalRoles = new Map<string, ProductImageSetMedia['role']>();
   const groups = input.productGroups.map((group, index) => {
-    const set = sets.get(group.productSetId)!;
+    const catalog = group.source === 'catalog' ? catalogSets.get(group.catalogSelectionId!) : undefined;
+    const set = catalog ?? sets.get(group.productSetId!)!;
     const images = new Map(set.media.map(image => [image.id, image.role]));
     if (group.mediaIds.some(id => !images.has(id))) throw new AppError(400, `图套「${set.styleNumber}」包含不属于该图套的图片，请重新选择`);
     if (group.mediaIds.some(id => !taskMedia.has(id))) throw new AppError(400, `图套「${set.styleNumber}」的分组图片未全部包含在本任务中`);
@@ -64,12 +77,14 @@ export async function normalizeTaskProductGroups(db: Database, input: CreationIn
       if (previous && previous !== role) throw new AppError(400, '同一图片在不同图套的用途不一致，请调整图套或移除重复图片');
       canonicalRoles.set(id, role);
     }
-    if (!group.mediaIds.some(id => images.get(id) === 'product')) throw new AppError(400, `图套「${set.styleNumber}」必须保留至少一张原图套主图`);
+    if (!draft && !group.mediaIds.some(id => images.get(id) === 'product')) throw new AppError(400, `图套「${set.styleNumber}」必须保留至少一张原图套主图`);
     // Comparison groups are intentionally demoted below. Every other group must have its own product image.
-    if (!(input.productUse === 'comparison' && index > 0) && !group.mediaIds.some(id => taskMedia.get(id) === 'product')) {
+    if (!draft && !(input.productUse === 'comparison' && index > 0) && !group.mediaIds.some(id => taskMedia.get(id) === 'product')) {
       throw new AppError(400, `图套「${set.styleNumber}」必须指定至少一张主商品图`);
     }
-    return { productSetId: set.id, styleNumber: set.styleNumber, name: set.name, mediaIds: [...group.mediaIds] };
+    return catalog
+      ? { source: 'catalog' as const, catalogSelectionId: catalog.id, catalog: catalog.catalog, styleNumber: catalog.styleNumber, name: catalog.name, mediaIds: [...group.mediaIds] }
+      : { productSetId: set.id, styleNumber: set.styleNumber, name: set.name, mediaIds: [...group.mediaIds] };
   });
   if (input.productUse === 'comparison') {
     const primary = new Set(groups[0].mediaIds);
@@ -78,7 +93,7 @@ export async function normalizeTaskProductGroups(db: Database, input: CreationIn
     input.media = input.media.map(item => comparison.has(item.id) ? { ...item, role: 'comparison' } : item);
   }
   input.productGroups = groups;
-  if (groups.length === 1) {
+  if (groups.length === 1 && groups[0].source !== 'catalog') {
     input.productSetId = groups[0].productSetId;
     input.styleNumber = groups[0].styleNumber;
   } else {

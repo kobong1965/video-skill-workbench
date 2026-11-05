@@ -18,3 +18,7 @@
 .product-set-selected-order button { min-height: var(--control-compact); padding: var(--space-1) var(--space-2); }
 .product-set-picker-footer { flex-wrap: wrap; }
 .product-set-picker-footer > span { margin-right: auto; color: var(--muted); font-size: var(--text-secondary); }
+.catalog-picker-filters { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)) auto; gap: var(--space-3); align-items: end; margin-bottom: var(--space-3); }
+.catalog-picker-note { color: var(--muted); font-size: var(--text-secondary); margin: 0 0 var(--space-4); }
+.picker-product-id { overflow-wrap: anywhere; font-family: var(--font-data); }
+@media(max-width: 600px) { .catalog-picker-filters { grid-template-columns: repeat(2,minmax(0,1fr)); } .product-set-selected-order > li { flex-wrap: wrap; } }

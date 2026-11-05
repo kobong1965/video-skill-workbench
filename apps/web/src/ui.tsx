@@ -5,6 +5,7 @@ export function Icon({ name }: { name: string }) {
   const icons: Record<string, ReactNode> = {
     create: <><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M14 17.5h7m-3.5-3.5v7"/></>,
     library: <><path d="M5 6h14v15H5zM8 3h11M9 10h6M9 14h6"/></>,
+    catalog: <><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M13 13h4M13 16h4"/></>,
     history: <><path d="M3 11a9 9 0 1 1 3 8M3 4v7h7M12 7v5l4 2"/></>,
     image: <><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1"/><path d="m3 17 5-5 4 4 4-6 5 7"/></>,
     settings: <><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></>,

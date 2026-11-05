@@ -1,0 +1,4 @@
+interface:
+  display_name: "牛仔帽裤装"
+  short_description: "上传新裤子产品图，沿用暮色与夜景停车场九镜头，直接输出中文视频提示词"
+  default_prompt: "使用 $cowboy-pants，根据我上传的新裤子产品图，沿用已确认的九镜停车场方案，直接输出可完整复制的中文 Seedance 提示词。"

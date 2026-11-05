@@ -4,6 +4,7 @@ import { api } from '../api';
 import { useLoad, useWorkspace } from '../workspace';
 import { AsyncButton, ControlHint, Icon, Message, Modal, statusLabel } from '../ui';
 import { PromptEditor } from './PromptEditor';
+import { CatalogIdentitySummary } from '../products/CatalogIdentitySummary';
 import { assignedProviderLabel } from '../tasks/task-routing';
 const CanvasImportModal = lazy(() => import('../canvas/CanvasImportModal').then(module => ({ default: module.CanvasImportModal })));
 
@@ -53,6 +54,7 @@ export function TaskResult({ id }: { id: string }) {
         {result ? <ControlHint label={dirty ? '先保存修改，再导入画布' : '导入 LibTV 画布'}><button className="primary" aria-label="导入画布" disabled={dirty} title={dirty ? '先保存修改，再导入画布' : '导入 LibTV 画布'} onClick={() => { if (!dirty) setCanvas(true); }}><Icon name="import"/><span>导入</span></button></ControlHint> : null}
       </div>
     </div>
+    <CatalogIdentitySummary groups={task.data.snapshot.input.productGroups}/>
     {task.error ? <Message error>{task.error}</Message> : null}<JobStatus task={task.data} refresh={reload}/>
     {!result && !task.data.jobs.length ? <section className="panel"><h2>输入已经保存，可以继续生成</h2><p>{singleUser ? '本次尚未提交到文字接口，点击即可继续生成。' : '本次尚未提交到文字接口。确认后才会使用额度。'}</p>{singleUser ? <AsyncButton className="primary" action={submit}>继续生成提示词</AsyncButton> : <button className="primary" onClick={() => setGenerate(true)}>继续生成提示词</button>}</section> : null}
     {result ? <><label className="result-version"><span>版本</span><select aria-label="查看保存版本" value={result.id} onChange={e => selectVersion(e.target.value)}>{task.data.results.map(x => <option key={x.id} value={x.id}>R{x.number} · {new Date(x.createdAt).toLocaleString('zh-CN')}</option>)}</select></label><PromptEditor key={result.id} task={task.data} result={result} refresh={reload} onDirtyChange={setDirtyResultId}/></> : null}

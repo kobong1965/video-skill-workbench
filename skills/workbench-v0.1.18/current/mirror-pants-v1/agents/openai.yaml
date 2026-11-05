@@ -1,0 +1,4 @@
+interface:
+  display_name: "镜前裤装"
+  short_description: "上传新裤装图，沿用已确认的十秒卧室镜前自拍方案，直接输出完整中文提示词"
+  default_prompt: "使用 $mirror-pants，根据我上传的新产品图，沿用这套已确认的镜前自拍方案输出完整中文 Seedance 提示词。"

@@ -16,6 +16,7 @@ import { registerAssets } from './assets';
 import { registerExports } from './exports';
 import { registerCanvas } from './canvas';
 import { registerProductSets } from './product-sets';
+import { registerProductCatalog } from './product-catalog';
 import { AppError, type AppContext } from './context';
 
 export async function buildApp(context: AppContext) {
@@ -47,6 +48,7 @@ export async function buildApp(context: AppContext) {
   await registerJobActions(app, context);
   await registerAssets(app, context);
   await registerProductSets(app, context);
+  await registerProductCatalog(app, context);
   await registerExports(app, context);
   await registerCanvas(app, context);
   app.get('/api/health', async request => {

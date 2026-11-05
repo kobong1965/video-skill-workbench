@@ -18,12 +18,13 @@ export function importInfo(row: ImportRow): CanvasImportInfo {
   return { id: row.id, taskId: row.task_id, resultId: row.result_id, status: row.status,
     progress: row.status === 'succeeded' ? 100 : Math.floor(row.steps.filter(x => x.status === 'succeeded').length / Math.max(1, row.steps.length) * 100),
     projectId: row.project_id, projectUrl: row.project_id ? `https://www.liblib.tv/canvas?projectId=${encodeURIComponent(row.project_id)}` : null,
-    error: row.error, steps: row.steps, createdAt: row.created_at, updatedAt: row.updated_at };
+    error: row.error, steps: row.steps, createdAt: row.created_at, updatedAt: row.updated_at,
+    ...(row.plan.productBindings?.length ? { productBindings: row.plan.productBindings } : {}) };
 }
 export function importSteps(plan: CanvasPlan): CanvasImportStep[] {
   return [{ key: 'canvas', label: '连接画布', status: 'pending' },
     ...plan.materials.map(x => ({ key: `media:${x.id}`, label: `上传${x.name}`, status: 'pending' as const })),
-    ...plan.batches.flatMap(batch => [...batch.texts.map((x, i) => ({ key: `text:${batch.number}:${i}`, label: `导入第${batch.number}批提示词${i + 1}`, status: 'pending' as const })),
+    ...plan.batches.flatMap(batch => [...batch.texts.map((x, i) => ({ key: `text:${batch.number}:${i}`, label: x.purpose === 'product-record' ? `写入商品资料记录：${x.name}` : `导入第${batch.number}批提示词${i + 1}`, status: 'pending' as const })),
       { key: `video:${batch.number}`, label: `连接第${batch.number}批视频节点`, status: 'pending' as const }]),
     ...(plan.groups ?? []).map(group => ({ key: `group:${group.key}`, label: `整理分组：${group.name}`, status: 'pending' as const })),
     { key: 'verify', label: '核对工作流', status: 'pending' }];
@@ -165,6 +166,7 @@ export class CanvasImportRunner {
         });
       }
       const videoIds: string[] = [];
+      const recordIds = new Set<string>();
       const modelSchemas = new Map<string, Record<string, any>>();
       for (const batch of row.plan.batches) {
         const textIds: string[] = []; const y = (batch.number - 1) * 1200;
@@ -173,8 +175,10 @@ export class CanvasImportRunner {
           const position = point(text.name, 600, y + index * 450);
           const nodeKey = await saveNode(text.name, ['node', '--x', String(position.x), '--y', String(position.y), 'create', text.name, '-p', project, '-t', 'text', '-u', content]);
           const saved = await execute(['node', nodeKey, '-p', project]);
-          if (JSON.stringify(saved.data?.content) !== JSON.stringify([text.content])) throw new Error('画布提示词已修改，已保留现有内容；请另建工作流或恢复原文后继续');
-          textIds.push(nodeKey); logicalIds.set(text.name, nodeKey); return nodeKey;
+          if (JSON.stringify(saved.data?.content) !== JSON.stringify([text.content])) throw new Error(`画布${text.purpose === 'product-record' ? '商品资料记录' : '提示词'}已修改，已保留现有内容；请另建工作流或恢复原文后继续`);
+          if (text.purpose === 'product-record') recordIds.add(nodeKey);
+          else textIds.push(nodeKey);
+          logicalIds.set(text.name, nodeKey); return nodeKey;
         });
         await step(`video:${batch.number}`, async () => {
           const parents = [...batch.materialIds.map(id => createdIds.get(id)!), ...textIds];
@@ -226,6 +230,7 @@ export class CanvasImportRunner {
         const nodes = new Set((graph.nodes ?? []).map((x: { id: string }) => x.id));
         if (row.steps.some(x => x.nodeKey && !nodes.has(x.nodeKey))) throw new Error('工作流节点尚未完整保存，可继续导入核对');
         if (expectedEdges.some(expected => !(graph.edges ?? []).some((edge: { source: string; target: string }) => edge.source === expected.source && edge.target === expected.target))) throw new Error('参考图或提示词连线尚未完整保存，可继续导入核对');
+        if ((graph.edges ?? []).some((edge: { source: string }) => recordIds.has(edge.source))) throw new Error('商品资料记录被连接为生成输入，已保留画布现状；请先断开该资料节点的输出连线再继续');
         for (const group of layout?.groups ?? []) {
           const saved = await execute(['group', groupIds.get(group.key)!, '-p', project]);
           const children = saved.data?.childNodeIds ?? saved.childNodeIds ?? saved.boundNodeKeys;

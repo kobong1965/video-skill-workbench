@@ -1,0 +1,51 @@
+{
+  "skill": "tk-flatlay-pants",
+  "version": "1.0.0",
+  "files": [
+    {
+      "path": "agents/openai.yaml",
+      "bytes": 329,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "assets/approved-audio-timeline.md",
+      "bytes": 3690,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "assets/approved-final-prompt.txt",
+      "bytes": 10730,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "assets/approved-shot-script.md",
+      "bytes": 9424,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "assets/benchmark-original.mp4",
+      "bytes": 3048201,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "references/product-swap-rules.md",
+      "bytes": 6202,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "references/provenance.json",
+      "bytes": 3313,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "references/working-template.txt",
+      "bytes": 9461,
+      "sha256": "原标识已省略"
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 3850,
+      "sha256": "原标识已省略"
+    }
+  ]
+}

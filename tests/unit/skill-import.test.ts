@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { zipSync, strToU8 } from 'fflate';
+import { readFile, readdir } from 'node:fs/promises';
+import path from 'node:path';
 import { parseSkillPackage } from '../../packages/domain/skill-import';
 
 describe('Skill 包只作为资料读取', () => {
@@ -18,12 +20,17 @@ describe('Skill 包只作为资料读取', () => {
     const result = await parseSkillPackage(Buffer.from('# 停车场\n[镜头](references/shots.md)'), 'SKILL.md');
     expect(result.missing).toEqual(['references/shots.md']);
   });
-  it('兼容合成停车场包的嵌套 Markdown，不读取私人 Skill 或伪造视频', async () => {
-    const entries = {
-      'SKILL.md': strToU8('# 合成停车场方案 · 17秒\n[完整模板](references/prompt-template.md)'),
-      'references/prompt-template.md': strToU8('## 2.1 镜头\n[动作](shots/actions.md)'),
-      'references/shots/actions.md': strToU8('17秒合成镜头资料，仅供导入测试。'),
-    };
+  it('兼容现有停车场原件的嵌套 Markdown，不伪造视频', async () => {
+    const root = 'C:/Users/Administrator/.codex/skills/parking-lot-top';
+    const entries: Record<string, Uint8Array> = {};
+    async function readFolder(folder: string) {
+      for (const item of await readdir(folder, { withFileTypes: true })) {
+        const absolute = path.join(folder, item.name);
+        if (item.isDirectory()) await readFolder(absolute);
+        else entries[path.relative(root, absolute).replaceAll('\\', '/')] = new Uint8Array(await readFile(absolute));
+      }
+    }
+    await readFolder(root);
     const result = await parseSkillPackage(Buffer.from(zipSync(entries)), 'parking.zip');
     expect(result.text).toContain('17秒');
     expect(result.files.find(x => x.path === 'references/prompt-template.md')?.text).toContain('2.1');

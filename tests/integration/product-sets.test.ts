@@ -35,10 +35,10 @@ afterAll(async () => h.close());
 
 describe('款号图套持久存储与复用', () => {
   it('保存规范款号、图片顺序与角色，并在新服务实例中读回', async () => {
-    const response = await createSet({ styleNumber: '  SKU-5007  ', name: '  灰色长裤  ', media: [{ id: images[0], role: 'product' }, { id: images[1], role: 'detail' }, { id: images[2], role: 'comparison' }] });
+    const response = await createSet({ styleNumber: '  SKU-9001  ', name: '  灰色长裤  ', media: [{ id: images[0], role: 'product' }, { id: images[1], role: 'detail' }, { id: images[2], role: 'comparison' }] });
     expect(response.statusCode).toBe(200);
     const set = response.json();
-    expect(set).toMatchObject({ styleNumber: 'SKU-5007', name: '灰色长裤', media: [{ id: images[0], role: 'product', name: '正面.png' }, { id: images[1], role: 'detail', name: '侧面.png' }, { id: images[2], role: 'comparison', name: '细节.png' }] });
+    expect(set).toMatchObject({ styleNumber: 'SKU-9001', name: '灰色长裤', media: [{ id: images[0], role: 'product', name: '正面.png' }, { id: images[1], role: 'detail', name: '侧面.png' }, { id: images[2], role: 'comparison', name: '细节.png' }] });
     expect(set.id).toMatch(/^[a-f0-9-]{36}$/); expect(Date.parse(set.createdAt)).not.toBeNaN(); expect(Date.parse(set.updatedAt)).not.toBeNaN();
     const restarted = await buildApp(h.context);
     try {

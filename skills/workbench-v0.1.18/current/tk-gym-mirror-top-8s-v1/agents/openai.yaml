@@ -1,0 +1,4 @@
+interface:
+  display_name: "健身房镜自拍上衣8秒"
+  short_description: "新上衣换款，复用健身房一镜自拍、捏衣转侧与小步靠近的完整动作节奏"
+  default_prompt: "使用 $tk-gym-mirror-top-8s，根据我上传的新上衣产品图，直接输出完整中文 Seedance 提示词。"

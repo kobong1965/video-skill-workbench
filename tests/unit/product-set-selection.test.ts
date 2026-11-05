@@ -3,7 +3,7 @@ import { productSetPatch, productSetsPatch, productUsePatch, productGroupsError,
 import type { CreationInput, ProductImageSet } from '../../packages/contracts';
 
 const set = {
-  id: '11111111-1111-4111-8111-111111111111', styleNumber: 'SKU-5007', name: '阔腿裤',
+  id: '11111111-1111-4111-8111-111111111111', styleNumber: 'SKU-9001', name: '阔腿裤',
   media: [
     { id: '22222222-2222-4222-8222-222222222222', role: 'product' as const, name: '正面.png' },
     { id: '33333333-3333-4333-8333-333333333333', role: 'detail' as const, name: '背面.png' },
@@ -13,13 +13,13 @@ const set = {
 describe('款号图套载入创作', () => {
   it('复用已保存的文件 ID 和图片用途，不产生新上传或覆盖脚本设置', () => {
     const patch = productSetPatch(set);
-    expect(patch).toMatchObject({ productSetId: set.id, styleNumber: 'SKU-5007', productName: '阔腿裤', facts: '', extra: '', media: set.media.map(({ id, role }) => ({ id, role })) });
+    expect(patch).toMatchObject({ productSetId: set.id, styleNumber: 'SKU-9001', productName: '阔腿裤', facts: '', extra: '', media: set.media.map(({ id, role }) => ({ id, role })) });
     expect(patch).not.toHaveProperty('selections');
     expect(patch).not.toHaveProperty('market');
     expect(patch).not.toHaveProperty('targetDuration');
   });
   it('未填写商品名称时以款号作为商品名', () => {
-    expect(productSetPatch({ ...set, name: '' }).productName).toBe('SKU-5007');
+    expect(productSetPatch({ ...set, name: '' }).productName).toBe('SKU-9001');
   });
   it('载入后修改本次图片角色不会改动原图套', () => {
     const patch = productSetPatch(set);

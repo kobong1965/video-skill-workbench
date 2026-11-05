@@ -1,0 +1,68 @@
+{
+  "skill_name": "cowboy-pants",
+  "display_name": "牛仔帽裤装",
+  "packaged_on": "2026-10-18",
+  "timezone": "Asia/Shanghai",
+  "version_basis": "原会话唯一最终交付的03_Seedance2.5_完整提示词.txt；用户在本次封装请求中声明已实际生成并确认效果通过。",
+  "validation_attribution": "用户确认；封装任务不重新调用生成服务，不独立声称已检验实际生成成片。",
+  "archived_video_role": "原会话上传的原视频/对标素材，仅备存；不是用户后来实际生成结果的独立证明，也不是未来生成的必需输入。",
+  "files": [
+    {
+      "path": "references/approved-prompt.txt",
+      "sha256": "原标识已省略",
+      "bytes": 11881
+    },
+    {
+      "path": "assets/original-video.mp4",
+      "sha256": "原标识已省略",
+      "bytes": 16082606
+    }
+  ],
+  "origin_paths_for_audit_only": {
+    "prompt": "本机素材路径已省略",
+    "video": "本机素材路径已省略"
+  },
+  "runtime_reads": [
+    "references/prompt-template.txt",
+    "references/reuse-map.md"
+  ],
+  "runtime_requires_original_paths": false,
+  "template_derivation": "仅用商品相关槽位替换原稿；所有其余文本逐字保留；构建时逆向替换还原全文比对通过。",
+  "slots": [
+    "END_SELLING_LINE",
+    "FINAL_PRODUCT_FOCUS",
+    "FRONT_FOCUS",
+    "FRONT_HAND_START",
+    "NIGHT_HEM_STATE",
+    "POINT_SOUND_LABEL",
+    "PRODUCT_CATEGORY",
+    "PRODUCT_CONTINUITY",
+    "PRODUCT_IMAGE_ROLES",
+    "PRODUCT_LOCK",
+    "PRODUCT_NAME",
+    "PRODUCT_READABILITY",
+    "REAR_COMPOSITION",
+    "REAR_END_STATE",
+    "REAR_OPEN_STATE",
+    "REAR_POINT_ACTION",
+    "REAR_RETURN_STATE",
+    "REAR_TOUCH_ACTION",
+    "REAR_VIEW_LABEL",
+    "RIGHT_HAND_TO_HAT",
+    "RIGHT_HAT_END_STATE",
+    "TEXT_AVOID_TARGETS",
+    "VOICE_EMPHASIS",
+    "VO_APPEARANCE",
+    "VO_DETAIL",
+    "VO_WORD_1",
+    "VO_WORD_2",
+    "VO_WORD_3",
+    "WALK_CLOTH_RESPONSE"
+  ],
+  "method_attribution": {
+    "author": "Serge Shima",
+    "source": "https://github.com/smixs/visual-skills",
+    "license": "CC BY 4.0",
+    "role": "原会话video技能方法来源，存档原稿之署名，不作为运行依赖"
+  }
+}

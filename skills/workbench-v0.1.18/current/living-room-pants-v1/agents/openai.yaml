@@ -1,0 +1,4 @@
+interface:
+  display_name: "客厅裤装"
+  short_description: "上传新裤子产品图，沿用33.30秒客厅低机位试穿方案生成中文提示词"
+  default_prompt: "使用 $living-room-pants，根据我上传的新裤子产品图，按客厅裤装方案直接输出两段完整中文视频提示词。"

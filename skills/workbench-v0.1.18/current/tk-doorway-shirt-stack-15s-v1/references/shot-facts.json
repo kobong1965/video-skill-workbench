@@ -1,0 +1,32 @@
+{
+  "id": "原标识已省略",
+  "skill_name": "tk-doorway-shirt-stack-15s",
+  "display_name": "开门抱叠衣15秒",
+  "duration": 15,
+  "shots": [
+    {
+      "start": 0,
+      "end": 15,
+      "description": "1个连续固定机位：抱叠衣入门、放低移出、触摸胸肩、后退、双指朝下"
+    }
+  ],
+  "observed_unknown": [
+    "新商品图未提供",
+    "原叠衣准确数量和面料未知",
+    "原音乐未直接听审",
+    "真实相机及焦距未知"
+  ],
+  "evidence_count": 58,
+  "supplemental_exports": 0,
+  "spoken_mode": "on_camera",
+  "onscreen_text": [
+    {
+      "start": 0,
+      "end": 15,
+      "text": "Best sale today / don't miss out!",
+      "type": "persistent_promo",
+      "timing_precision": "sampling based, approx ±0.267s"
+    }
+  ],
+  "product_category": "tops"
+}

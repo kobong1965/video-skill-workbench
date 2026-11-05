@@ -1,0 +1,40 @@
+{
+  "id": "原标识已省略",
+  "skill_name": "tk-white-garage-pants-12s",
+  "display_name": "白车库裤装12秒",
+  "duration": 12.281905,
+  "shots": [
+    {
+      "start": 0,
+      "end": 4.133333,
+      "description": "裁脸正面，多条裤分拎甩出并轻提裤面"
+    },
+    {
+      "start": 4.133333,
+      "end": 7.1,
+      "description": "腰头到斜插袋特写，手机入袋，镜内横移"
+    },
+    {
+      "start": 7.1,
+      "end": 12.266667,
+      "description": "侧身抚裤、蹲下起身、转正走近"
+    }
+  ],
+  "observed_unknown": [
+    "新产品图缺失",
+    "手机容量与弹性不能继承",
+    "头部大多不可见",
+    "无直接听审",
+    "原曲节拍未知"
+  ],
+  "evidence_count": 47,
+  "supplemental_exports": 40,
+  "spoken_mode": "music_vocals_or_unknown",
+  "onscreen_text": [],
+  "product_category": "pants",
+  "adaptation_slots": [
+    "PRODUCT_FACTS",
+    "POCKET_ADAPTATION",
+    "AUDIO_PLAN"
+  ]
+}

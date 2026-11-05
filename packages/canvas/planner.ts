@@ -2,13 +2,16 @@ import type { PromptOutput, TaskSnapshot } from '../contracts';
 import { batchShots, renderPrompt } from '../domain/planning';
 import { batchMediaIds, referenceRoleLabels } from '../domain/references';
 import { productGroupLabel, productUseLabels, validateProductGroupReferences } from '../domain/product-groups';
+import type { CanvasProductBinding } from './contracts';
+import { canvasProductBindings, productRecordChunks, productRecordText } from './product-records';
 
 export interface CanvasMaterial { id: string; sourceId?: string; name: string; kind: string; mime: string; batch: number | null; skillVersionIds?: string[]; productGroupLabel?: string; }
 export interface CanvasGroup { key: string; name: string; materialIds: string[]; batchNumbers: number[]; }
 export interface CanvasPlan {
   materials: CanvasMaterial[];
-  batches: { number: number; groupKey?: string; materialIds: string[]; texts: { name: string; content: string }[]; video: { name: string; prompt: string } }[];
+  batches: { number: number; groupKey?: string; materialIds: string[]; texts: { name: string; content: string; purpose?: 'prompt' | 'product-record' }[]; video: { name: string; prompt: string } }[];
   groups?: CanvasGroup[];
+  productBindings?: CanvasProductBinding[];
   origin?: { x: number; y: number };
 }
 
@@ -27,6 +30,7 @@ export function videoReferenceMode(schema: Record<string, any>, images: number, 
 /** Uses only saved task/result inputs; preview videos and unconfirmed assets never enter the plan. */
 export function planCanvasImport(importId: string, snapshot: TaskSnapshot, output: PromptOutput, assets: CanvasMaterial[]): CanvasPlan {
   validateProductGroupReferences(snapshot, output.shots);
+  const productBindings = canvasProductBindings(snapshot);
   const prefix = `SW-${importId.replaceAll('-', '').slice(0, 12)}`;
   const originals: CanvasMaterial[] = snapshot.media.map(x => ({ id: x.id, name: x.name, mime: x.mime, kind: x.role, batch: null, ...(productGroupLabel(snapshot, x.id) ? { productGroupLabel: productGroupLabel(snapshot, x.id) } : {}) }));
   const merged = new Map<string, CanvasMaterial>();
@@ -61,7 +65,7 @@ export function planCanvasImport(importId: string, snapshot: TaskSnapshot, outpu
     if (batch === undefined) throw new Error('分镜图/尾帧跨脚本，请按脚本重新确认素材');
     return { ...material, batch };
   });
-  const plan: CanvasPlan = { materials: [], batches: [], groups: [] };
+  const plan: CanvasPlan = { materials: [], batches: [], groups: [], ...(productBindings.length ? { productBindings } : {}) };
   for (const [scriptIndex, script] of scripts.entries()) {
     const groupKey = `script:${script.versionId}`;
     const selected = snapshot.skills?.find(skill => skill.versionId === script.versionId);
@@ -90,7 +94,14 @@ export function planCanvasImport(importId: string, snapshot: TaskSnapshot, outpu
     const groupSummary = groups?.length ? `\n商品分组（用途：${snapshot.input.productUse ? productUseLabels[snapshot.input.productUse] : '单款'}）：\n${groups.map((group, index) => `组${index + 1}｜款号 ${group.styleNumber}｜${group.name || group.styleNumber}`).join('\n')}\n仅使用本批已连接的组图，不将不同款号的细节互相替换。` : '';
     const prompt = `${renderPrompt(output, batch.shots)}${groupSummary}\n\n本批参考图顺序与用途：\n${referenceList}\n${batch.note}`;
     // Stay below Windows CreateProcess's command-line limit without truncating any saved content.
-    const texts = Array.from({ length: Math.ceil(prompt.length / 10000) }, (_, i) => ({ name: `${prefix}-第${batch.number}批提示词${i + 1}`, content: prompt.slice(i * 10000, (i + 1) * 10000) }));
+    const texts: CanvasPlan['batches'][number]['texts'] = Array.from({ length: Math.ceil(prompt.length / 10000) }, (_, i) => ({ name: `${prefix}-第${batch.number}批提示词${i + 1}`, content: prompt.slice(i * 10000, (i + 1) * 10000) }));
+    if (productBindings.length && batch.number === batches[0].number) {
+      const record = productRecordText(importId, productBindings);
+      productRecordChunks(record).forEach((content, index) => texts.push({
+        name: `${prefix}-脚本${scriptIndex + 1}商品资料记录${index + 1}`,
+        content, purpose: 'product-record',
+      }));
+    }
     const videoPrompt = prompt.length <= 16000 ? prompt : `请完整遵循连接到本视频节点的全部文本提示词，按编号连续阅读，不省略台词、声音、镜头和商品要求。${groupSummary}\n本批参考图顺序与用途：\n${referenceList}`;
     return { number: batch.number, groupKey, materialIds: refs.map(x => x.id), texts, video: { name: `${prefix}-第${batch.number}批视频`, prompt: videoPrompt } };
     }));

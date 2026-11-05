@@ -4,6 +4,7 @@ import type { CanvasConnection as Connection, CanvasProjects as Destinations, Ca
 import { api } from '../api';
 import { AsyncButton, Message, Modal } from '../ui';
 import { useLoad, useWorkspace } from '../workspace';
+import { CatalogIdentitySummary } from '../products/CatalogIdentitySummary';
 import './canvas.css';
 
 function ImportProgress({ record, update }: { record: ImportRecord; update: (record: ImportRecord) => void }) {
@@ -88,6 +89,7 @@ export function CanvasImportModal({ task, result, onClose }: { task: TaskInfo; r
   const shown = record ?? (!newImport ? history.data?.[0] : null);
   return <Modal title="导入 LibTV 画布" onClose={onClose}>
     <div className="form-stack"><p className="canvas-import-summary">R{result.number} · {task.snapshot.media.filter(media => media.mime.startsWith('image/')).length} 张商品／参考图 · 不自动生成</p>
+      <CatalogIdentitySummary groups={task.snapshot.input.productGroups}/>
       {connection.error ? <Message error>{connection.error}</Message> : null}
       {!connection.data ? <Message>正在连接 LibTV…</Message> : !connection.data.connected ? <Message error>{connection.data.error || 'LibTV 尚未登录，请先在本机登录 LibTV 官方 CLI。'}<button onClick={() => void connection.refresh()}>重新连接</button></Message> : <small>LibTV · {connection.data.accountName || '已连接'}</small>}
       {shown ? <><ImportProgress record={shown} update={setRecord}/>{shown.status === 'succeeded' ? <button className="text-button" onClick={() => { setRecord(null); setNewImport(true); }}>导入到另一个画布</button> : null}</> : history.loading ? <Message>正在读取导入记录…</Message> : history.error ? <Message error>{history.error}<button onClick={() => void history.refresh()}>重新读取</button></Message> : connection.data?.connected ? <DestinationForm task={task} result={result} onImported={setRecord}/> : null}

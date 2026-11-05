@@ -1,0 +1,7 @@
+.catalog-identity-summary { border: 1px solid var(--line); border-radius: var(--radius-control); padding: var(--space-4); margin-bottom: var(--space-4); min-width: 0; }
+.catalog-identity-summary h3 { margin: 0 0 var(--space-3); font-size: var(--text-body); }
+.catalog-identity-summary ul { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3); }
+.catalog-identity-summary li { display: grid; gap: var(--space-1); overflow-wrap: anywhere; }
+.catalog-identity-summary li > span, .catalog-identity-summary small { font-size: var(--text-secondary); color: var(--muted); }
+.catalog-identity-summary small { display: block; margin-top: var(--space-3); }
+.catalog-identity-id code { color: var(--ink); user-select: text; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }

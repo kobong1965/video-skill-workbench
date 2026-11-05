@@ -26,7 +26,7 @@ async function openPaginationImport(page: Page) {
 test('提示词和商品图可导入指定画布，只创建工作流不生成', async ({ page }) => {
   const taskId = '11111111-1111-4111-8111-111111111111';
   const resultId = '22222222-2222-4222-8222-222222222222';
-  const projectId = '0123456789abcdef0123456789abcdef';
+  const projectId = '60581fbf922b4ba9b7981186e8f73d21';
   const record = { id: '33333333-3333-4333-8333-333333333333', taskId, resultId, status: 'succeeded', progress: 100, projectId, projectUrl: `https://www.liblib.tv/canvas?projectId=${projectId}`, error: null, steps: [{ key: 'product-1', label: '商品图', status: 'succeeded' }, { key: 'prompt-1', label: '提示词和视频节点', status: 'succeeded' }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
   await page.route(`**/api/tasks/${taskId}`, route => route.fulfill({ json: {
     id: taskId, name: '画布导入验证', status: 'awaiting_confirmation', createdAt: new Date().toISOString(), jobs: [], assets: [],

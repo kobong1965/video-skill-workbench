@@ -1,0 +1,84 @@
+{
+  "skill_name": "tk-flatlay-pants",
+  "display_name": "裤装平铺八镜",
+  "version": "1.0.0",
+  "packaged_date": "2026-10-18",
+  "version_basis": "本会话唯一完整最终稿；用户在本次请求中说明已实际生成并确认效果通过，要求按该最终稿封装。",
+  "confirmation_scope": "用户确认作为封装依据；封装未重新生成视频，未另行核验新生成验收成片。包内MP4是原始迷彩平铺对标，不冒称新产品生成成片。",
+  "fixed_contract": {
+    "duration_seconds": 12.866667,
+    "aspect_ratio": "9:16",
+    "shots": 8,
+    "people": 0,
+    "cut_times_seconds": [
+      1.4,
+      3.066667,
+      4.066667,
+      5.566667,
+      6.666667,
+      8.5,
+      10.033333
+    ],
+    "voice_language": "American English",
+    "prompt_language": "Simplified Chinese",
+    "audio": "原最终稿的独立近似声音设计，完整保留"
+  },
+  "archive_files": [
+    {
+      "source": "本机素材路径已省略",
+      "archived_file": "assets/approved-final-prompt.txt",
+      "bytes": 10730,
+      "sha256": "原标识已省略"
+    },
+    {
+      "source": "本机素材路径已省略",
+      "archived_file": "assets/approved-shot-script.md",
+      "bytes": 9424,
+      "sha256": "原标识已省略"
+    },
+    {
+      "source": "本机素材路径已省略",
+      "archived_file": "assets/approved-audio-timeline.md",
+      "bytes": 3690,
+      "sha256": "原标识已省略"
+    },
+    {
+      "source": "本机素材路径已省略",
+      "archived_file": "assets/benchmark-original.mp4",
+      "bytes": 3048201,
+      "sha256": "原标识已省略"
+    }
+  ],
+  "template_slots": [
+    "detail_occlusion_guard",
+    "flatlay_state",
+    "front_detail_focus",
+    "leg_visual_detail",
+    "light_on_product",
+    "primary_visual_detail",
+    "product_facts",
+    "product_name",
+    "product_reference_roles",
+    "subtitle1",
+    "subtitle2",
+    "subtitle3",
+    "subtitle4",
+    "surface_and_structure",
+    "vo1",
+    "vo1_direction",
+    "vo2",
+    "vo2_direction",
+    "vo3",
+    "vo3_direction",
+    "vo4",
+    "vo4_direction",
+    "vo5",
+    "vo5_direction"
+  ],
+  "normal_invocation": "只读模板和换款规则、检查当前产品图、输出完整中文提示词；不重分析归档视频，不调用付费生成。",
+  "method_attribution": "母版最初使用content-visual-analysis与video方法；video方法作者Serge Shima，CC BY 4.0，https://github.com/smixs/visual-skills 。本Skill不依赖它们安装。",
+  "product_parameterization_notes": [
+    "只参数化产品事实、类别、颜色、结构及对应文案，固定相机/时间线/声音不改。",
+    "对旧产品图鞋款的指代改为通用排除语句，固定黑色骨骼图案拖鞋不改。"
+  ]
+}

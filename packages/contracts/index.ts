@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { catalogSelectionSnapshotSchema } from './catalog-selection';
 
 export const idSchema = z.string().uuid();
 export const skillKinds = ['opening', 'detail', 'outfit', 'comparison', 'full'] as const;
@@ -7,11 +8,15 @@ export const MAX_TASK_IMAGES = 36;
 export const MAX_PRODUCT_GROUPS = 6;
 export const productUses = ['colors', 'outfit', 'comparison'] as const;
 export const productGroupSchema = z.object({
-  productSetId: idSchema,
+  source: z.enum(['manual', 'catalog']).optional(),
+  productSetId: idSchema.optional(),
+  catalogSelectionId: idSchema.optional(),
+  catalog: catalogSelectionSnapshotSchema.optional(),
   styleNumber: z.string().trim().min(1).max(80),
   name: z.string().trim().max(100).default(''),
   mediaIds: z.array(idSchema).min(1).max(12),
 }).superRefine((group, context) => {
+  if (group.source === 'catalog' ? !group.catalogSelectionId || !!group.productSetId : !group.productSetId || !!group.catalogSelectionId || !!group.catalog) context.addIssue({ code: 'custom', message: '款号来源与关联记录不一致，请重新选择' });
   if (new Set(group.mediaIds).size !== group.mediaIds.length) context.addIssue({ code: 'custom', path: ['mediaIds'], message: '图套内不能重复选择同一图片' });
 });
 export type ProductGroup = z.infer<typeof productGroupSchema>;
@@ -40,7 +45,7 @@ export const creationSchema = z.object({
   const groups = input.productGroups;
   if (!groups) return;
   if (groups.length > 1 && !input.productUse) context.addIssue({ code: 'custom', path: ['productUse'], message: '请选择多款号用途：换色、搭配或对比' });
-  if (new Set(groups.map(group => group.productSetId)).size !== groups.length) context.addIssue({ code: 'custom', path: ['productGroups'], message: '不能重复选择同一款号图套' });
+  if (new Set(groups.map(group => `${group.source === 'catalog' ? 'catalog:' + group.catalogSelectionId : 'manual:' + group.productSetId}`)).size !== groups.length) context.addIssue({ code: 'custom', path: ['productGroups'], message: '不能重复选择同一款号图套' });
 });
 export type CreationInput = z.infer<typeof creationSchema>;
 export const outputSchema = z.object({
