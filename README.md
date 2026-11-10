@@ -2,19 +2,19 @@
 
 Windows 本机视频脚本与素材工作台：保存、预览和组合 Skill，根据商品图生成中文视频提示词，再导入 LibTV 画布，由使用者确认模型后手动生成。
 
-当前软件版本为 **0.1.20**。从 0.1.19 开始，仓库同步与新 Release 仅发布程序源码、Windows 软件包和校验文件，不再同步脚本 Skill、素材库或其他用户资料。软件仍可使用和导入使用者自己的脚本。
+当前软件版本为 **0.1.21**。从 0.1.19 开始，仓库同步与新 Release 仅发布程序源码、Windows 软件包和校验文件，不再同步脚本 Skill、素材库或其他用户资料。软件仍可使用和导入使用者自己的脚本。
 
 ## 下载与运行
 
-- **[下载 Windows x64 软件包](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.20/VideoSkillWorkbench-0.1.20-Windows-x64.zip)**
-- [版本说明与校验文件](https://github.com/kobong1965/video-skill-workbench/releases/tag/v0.1.20)
-- [SHA256SUMS.txt](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.20/SHA256SUMS.txt)
+- **[下载 Windows x64 软件包](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.21/VideoSkillWorkbench-0.1.21-Windows-x64.zip)**
+- [版本说明与校验文件](https://github.com/kobong1965/video-skill-workbench/releases/tag/v0.1.21)
+- [SHA256SUMS.txt](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.21/SHA256SUMS.txt)
 
 请完整解压 Windows 软件包并保留全部子目录，再启动目录中的 EXE。下载后可用 PowerShell 的 `Get-FileHash -Algorithm SHA256` 与该版本的 `SHA256SUMS.txt` 比对；软件内下载也会验证该校验文件。
 
 要求：**Windows 10/11 x64、可用 E 盘、Microsoft WebView2 Runtime**。Node、.NET 及后台运行文件随软件提供。当前版本按 `E:\Codex工作盘` 的目录规则工作，并非任意盘符便携版。
 
-1. 完整解压到 `E:\Codex工作盘\` 下的独立程序目录，例如 `E:\Codex工作盘\artifacts\latest\video-skill-workbench\windows-0.1.20`，打开其中的 `视频Skill工作台.exe`。
+1. 完整解压到 `E:\Codex工作盘\` 下的独立程序目录，例如 `E:\Codex工作盘\artifacts\latest\video-skill-workbench\windows-0.1.21`，打开其中的 `视频Skill工作台.exe`。
 2. 新电脑首次使用：右上角“⋯ → 首次安装码”，自行创建管理员账号；已有账号无需重建。
 3. 在工作台的“脚本”页导入自己的单个 Skill ZIP；已有安装沿用原数据目录内的脚本。在“设置”配置自己的文字／视觉接口、模型和密钥，图片接口按需配置。
 4. 上传商品或选择保存的款号图套 → 选择脚本 → 下一步 → 常规／高级设置 → 生成提示词。
@@ -59,7 +59,7 @@ node scripts/run.mjs test --temp-root "E:\Codex工作盘\temp\video-skill-workbe
 
 ## 核验、隐私与许可
 
-软件发布的边界检查覆盖 Skill 库、`SKILL.md`、原视频、脚本压缩合集、用户数据目录、数据库和秘密文件；通用构建工具、数据库迁移及合法运行依赖继续保留。具体功能以 [0.1.20 版本说明](docs/release-0.1.20.md) 为准。
+软件发布的边界检查覆盖 Skill 库、`SKILL.md`、原视频、脚本压缩合集、用户数据目录、数据库和秘密文件；通用构建工具、数据库迁移及合法运行依赖继续保留。具体功能以 [0.1.21 版本说明](docs/release-0.1.21.md) 为准。
 
 本次停止同步从 0.1.19 开始生效。既有 Git 历史以及旧版 `v0.1.18` Release 曾发布脚本 Skill，旧版更早的标签也可能包含素材；本次没有改写 Git 历史或删除旧 Release。停止后续同步不会撤回已公开内容，若需清理历史，应另行明确范围后处理。
 

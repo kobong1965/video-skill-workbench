@@ -7,13 +7,19 @@ export const windowsNotices = ['THIRD-PARTY-NOTICES.md'] as const;
 
 export const windowsWebInput = windowsOutput;
 
-export function distributableFile(relative: string) {
+export function distributableFile(relative: string, entryType: 'file' | 'directory' = 'file') {
   // fs.cp calls its filter once for the selected source root itself.
   if (!relative) return true;
-  try { validateSoftwareReleasePaths([relative]); } catch { return false; }
+  try { validateSoftwareReleasePaths([relative], entryType); } catch { return false; }
   return !relative.split(/[/\\]/).some(part => /^(?:tests?|testing|__tests__|fixtures?|examples?|benchmarks?)(?:[.-].*)?$/i.test(part)
     || /^(?:coverage|\.git|\.cache|\.vite(?:-temp)?|desktop-profile|local-secrets\.json|postgres-local\.json|\.env(?:\..*)?)$/i.test(part)
     || /\.(?:test|spec)(?:[-.].*)?$/i.test(part));
+}
+
+/** Keep the package path when copying one dependency, including its root directory. */
+export function distributableCopyEntry(packageRoot: string, relative: string, entryType: 'file' | 'directory') {
+  return !relative.split(/[/\\]/).includes('node_modules')
+    && distributableFile(path.join(packageRoot, relative), entryType);
 }
 
 export function windowsOutput(value: string) {

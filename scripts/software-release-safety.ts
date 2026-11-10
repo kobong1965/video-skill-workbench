@@ -1,9 +1,9 @@
 const userDirectories = /^(?:skills?|skill-library|materials|ui-source|ui-customizations|backend-import|data|pgdata|postgres-data|desktop-profile|user-data|user-exports?|exports|backups?|private-datasets?|datasets?|user-media|media|uploads?|product-images|product-sets|production)$/i;
-const privateFiles = /^(?:local-secrets\.json|postgres-local\.json|credentials\.json|secrets\.json|本机安装码\.txt|id_rsa|id_ed25519)$/i;
+const privateFiles = /^(?:local-secrets\.json|postgres-local\.json|desktop-preferences\.json|credentials\.json|secrets\.json|本机安装码\.txt|id_rsa|id_ed25519)$/i;
 const privateExtensions = /\.(?:sqlite(?:3)?|db|dump|backup|bak|p12|pfx|key|zip|7z|rar|tar|tgz|gz|mp4|mov|mkv|avi|webm|m4v|wmv|mpeg|mpg|mts)$/i;
 
 /** Paths inside a software package or source snapshot, never the outer program ZIP. */
-export function validateSoftwareReleasePaths(paths: readonly string[]): void {
+export function validateSoftwareReleasePaths(paths: readonly string[], entryType: 'file' | 'directory' = 'file'): void {
   const seen = new Set<string>();
   for (const value of paths) {
     const normalized = value.replaceAll('\\', '/');
@@ -27,8 +27,14 @@ export function validateSoftwareReleasePaths(paths: readonly string[]): void {
       }
     }
     const filename = parts.at(-1)!;
-    if (privateExtensions.test(filename) || /^(?:private[-_]?key)(?:\..*)?$/i.test(filename)
-      || /^(?:Cookies|Login Data)(?:-journal|-wal|-shm)?$/i.test(filename)) {
+    // .d.mts is a TypeScript declaration supplied by production dependencies,
+    // not an MPEG transport stream. All actual .mts media remains forbidden.
+    const dependencyDeclaration = dependency >= 0 && entryType === 'file' && /\.d\.mts$/i.test(filename);
+    // Undici has a real implementation directory named cookies. A file named
+    // Cookies is still a browser session database and is never distributed.
+    const dependencyCookieDirectory = dependency >= 0 && entryType === 'directory' && /^cookies$/i.test(filename);
+    if ((privateExtensions.test(filename) && !dependencyDeclaration) || /^(?:private[-_]?key)(?:\..*)?$/i.test(filename)
+      || (/^(?:Cookies|Login Data)(?:-journal|-wal|-shm)?$/i.test(filename) && !dependencyCookieDirectory)) {
       throw new Error(`软件发布不能包含资料、密钥、数据库或压缩合集：${normalized}`);
     }
     const key = normalized.toLowerCase();

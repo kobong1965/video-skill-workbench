@@ -18,8 +18,8 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
 [assembly: AssemblyTitle("视频 Skill 工作台")]
-[assembly: AssemblyVersion("0.1.20.0")]
-[assembly: AssemblyFileVersion("0.1.20.0")]
+[assembly: AssemblyVersion("0.1.21.0")]
+[assembly: AssemblyFileVersion("0.1.21.0")]
 [assembly: SupportedOSPlatform("windows")]
 
 internal static class Program

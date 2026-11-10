@@ -25,6 +25,7 @@ const newUser = credentials.extend({ displayName: z.string().trim().min(1).max(5
 
 export async function registerAuth(app: FastifyInstance, context: AppContext) {
   const { db, origin } = context;
+  const localOwnerMode = context.localOwnerMode === true && context.singleUserMode === true && origin === 'http://127.0.0.1:4178';
   const publicPaths = new Set(['/api/health', '/api/auth/state', '/api/auth/setup', '/api/auth/login', '/api/auth/join']);
   app.decorateRequest('user');
   app.decorateRequest('csrf', '');
@@ -32,6 +33,12 @@ export async function registerAuth(app: FastifyInstance, context: AppContext) {
     const pathname = request.url.split('?')[0];
     if (!pathname.startsWith('/api/')) return;
     if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method) && request.headers.origin !== origin) throw new AppError(403, '请求来源不符，请从工作台页面操作');
+    if (localOwnerMode) {
+      // Re-read the existing account so disabled or removed owners immediately
+      // fall back to normal authentication. Never create or promote an account.
+      const localOwner = (await db.query(`SELECT ${userSql} FROM users WHERE role='admin' AND active=true ORDER BY created_at,id LIMIT 1`)).rows[0];
+      if (localOwner) { request.user = localOwner; request.csrf = ''; return; }
+    }
     if (publicPaths.has(pathname)) return;
     const token = request.cookies.vsw_session;
     if (!token) throw new AppError(401, '请先登录');
@@ -47,7 +54,7 @@ export async function registerAuth(app: FastifyInstance, context: AppContext) {
     reply.setCookie('vsw_session', token, { path: '/', httpOnly: true, sameSite: 'strict', secure: origin.startsWith('https:'), maxAge: 604800 });
     return { user, csrf };
   }
-  app.get('/api/auth/state', async request => ({ needsSetup: !(await db.query('SELECT 1 FROM users LIMIT 1')).rowCount,
+  app.get('/api/auth/state', async request => localOwnerMode && request.user ? { needsSetup: false, hasSession: true } : ({ needsSetup: !(await db.query('SELECT 1 FROM users LIMIT 1')).rowCount,
     hasSession: request.cookies.vsw_session ? Boolean((await db.query('SELECT 1 FROM sessions s JOIN users u ON s.user_id=u.id WHERE s.token_hash=$1 AND s.expires_at>now() AND u.active=true', [digest(request.cookies.vsw_session)])).rowCount) : false }));
   app.post('/api/auth/setup', { config: { rateLimit: { max: 8, timeWindow: '1 minute' } } }, async (request, reply) => {
     const input = newUser.extend({ setupKey: z.string() }).parse(request.body);
@@ -87,7 +94,7 @@ export async function registerAuth(app: FastifyInstance, context: AppContext) {
     return { user, csrf: request.csrf, preferences: (await db.query('SELECT preferences FROM users WHERE id=$1', [user.id])).rows[0].preferences };
   });
   app.post('/api/auth/logout', async (request, reply) => {
-    await db.query('DELETE FROM sessions WHERE token_hash=$1', [digest(request.cookies.vsw_session!)]);
+    if (request.cookies.vsw_session) await db.query('DELETE FROM sessions WHERE token_hash=$1', [digest(request.cookies.vsw_session)]);
     reply.clearCookie('vsw_session', { path: '/' }); return { ok: true };
   });
   app.put('/api/preferences', async request => {

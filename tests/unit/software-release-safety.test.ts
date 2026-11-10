@@ -13,7 +13,7 @@ describe('software-only release boundary', () => {
     'uploads/photo.jpg', 'server/product-images/photo.jpg', 'backups/snapshot.sql',
     'server/video-skill-workbench-data/settings.json', 'pgdata/PG_VERSION',
     'server/SKILL.md', 'server/Skill.md', 'server/.env.local', 'local-secrets.json',
-    'server/postgres-local.json', 'credentials.json', 'secrets.json', 'desktop-profile/Cookies',
+    'server/postgres-local.json', 'desktop-preferences.json', 'credentials.json', 'secrets.json', 'desktop-profile/Cookies',
     'server/workbench.sqlite', 'server/workbench.sqlite3', 'server/workbench.db',
     'backup.dump', 'private-key.pem', 'id_ed25519', 'server/private.key',
     'reference.MP4', 'assets/original.mov', 'server/media.webm',
@@ -34,14 +34,25 @@ describe('software-only release boundary', () => {
       'server/node_modules/skill-library/lib/catalog.json',
       'server/node_modules/example/lib/data/index.js',
       'server/node_modules/undici/lib/web/cookies/index.js',
+      'server/node_modules/sharp/dist/index.d.mts',
+      'server/node_modules/tsx/dist/cjs/api/index.d.mts',
     ];
     expect(() => validateSoftwareReleasePaths(paths)).not.toThrow();
   });
 
   it('still rejects private files inside a dependency tree and user folders above it', () => {
-    for (const filename of ['server/node_modules/example/SKILL.md', 'server/node_modules/example/.env', 'server/node_modules/example/test.mp4', 'skills/node_modules/example/index.js']) {
+    for (const filename of ['server/node_modules/example/SKILL.md', 'server/node_modules/example/.env', 'server/node_modules/example/secrets.json', 'server/node_modules/example/private.db', 'server/node_modules/example/test.mp4', 'server/node_modules/example/original.mts', 'server/node_modules/undici/lib/web/Cookies', 'server/node_modules/example/Login Data', 'skills/node_modules/example/index.js']) {
       expect(() => validateSoftwareReleasePaths([filename])).toThrow();
     }
+  });
+
+  it('distinguishes a dependency cookies directory from a browser Cookies file', () => {
+    expect(() => validateSoftwareReleasePaths(['server/node_modules/undici/lib/web/cookies'], 'directory')).not.toThrow();
+    for (const filename of ['desktop-profile/Cookies', 'cookies', 'server/node_modules/example/Cookies-wal', 'server/node_modules/example/Login Data']) {
+      expect(() => validateSoftwareReleasePaths([filename], 'directory')).toThrow();
+    }
+    expect(() => validateSoftwareReleaseManifest({ includesUserData: false, includesSkills: false, files: [{ path: 'server/node_modules/example/Cookies' }] })).toThrow();
+    expect(() => validateSoftwareReleasePaths(['assets/original.d.mts'])).toThrow();
   });
 
   it('allows only explicit editor and upload UI source directories, not user libraries', () => {

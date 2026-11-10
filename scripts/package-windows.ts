@@ -2,7 +2,9 @@ import { access, lstat, mkdir, cp, copyFile, readFile, writeFile, readdir } from
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
-import { windowsOutput, windowsPayload, windowsNotices, windowsWebInput, distributableFile } from './windows-package';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { windowsOutput, windowsPayload, windowsNotices, windowsWebInput, distributableFile, distributableCopyEntry } from './windows-package';
 import { buildNative } from './build-native';
 import { validateSoftwareReleaseManifest } from './software-release-safety';
 
@@ -33,9 +35,10 @@ if (process.version !== 'v24.21.0') throw new Error('请使用已校验的 Node 
 for (const required of [nodeLicense, brandIcon, libtvCli, path.join(web, 'index.html'), webviewLicense]) await access(required);
 async function safeCopy(source: string, destination: string) {
   await cp(source, destination, { recursive: true, errorOnExist: true, force: false, filter: async current => {
-    if ((await lstat(current)).isSymbolicLink()) throw new Error('不将链接打入发行包');
+    const info = await lstat(current);
+    if (info.isSymbolicLink()) throw new Error('不将链接打入发行包');
     const relative = path.relative(source, current);
-    return !relative.split(path.sep).includes('node_modules') && distributableFile(relative);
+    return distributableCopyEntry(path.relative(output, destination), relative, info.isDirectory() ? 'directory' : 'file');
   } });
 }
 await mkdir(temp, { recursive: true });
@@ -75,11 +78,18 @@ await writeFile(path.join(output, 'release.json'), JSON.stringify({ id: randomUU
 await buildNative(output);
 await copyFile(runtimePackage ? path.join(runtimePackage, 'DotNet-LICENSE.txt') : 'E:/Codex工作盘/runtimes/dotnet-10.0.401/LICENSE.txt', path.join(output, 'DotNet-LICENSE.txt'));
 await copyFile(runtimePackage ? path.join(runtimePackage, 'DotNet-ThirdPartyNotices.txt') : 'E:/Codex工作盘/runtimes/dotnet-10.0.401/ThirdPartyNotices.txt', path.join(output, 'DotNet-ThirdPartyNotices.txt'));
+// Load the real API using only this package's Node and production dependencies.
+// Importing app.ts does not build an AppContext, connect a database or listen on a
+// port; it catches missing runtime modules before a broken package gets a manifest.
+await promisify(execFile)(path.join(output, 'runtime/node.exe'), [
+  '--import', 'tsx', '--input-type=module', '--eval', "await import('./apps/api/app.ts')",
+], { cwd: server, env: { ...process.env, NODE_PATH: '' }, windowsHide: true, timeout: 30000, maxBuffer: 1024 * 1024 });
+console.log('Packaged API cold import passed.');
 const files: { path: string; size: number; sha256: string }[] = [];
 async function inventory(relative: string) {
   for (const item of await readdir(path.join(output, relative), { withFileTypes: true })) {
     const local = path.join(relative, item.name);
-    if (!distributableFile(local)) throw new Error(`发行清单包含不应分发的条目：${local}`);
+    if (!distributableFile(local, item.isDirectory() ? 'directory' : 'file')) throw new Error(`发行清单包含不应分发的条目：${local}`);
     if (item.isDirectory()) await inventory(local);
     else if (item.isFile()) { const bytes = await readFile(path.join(output, local)); files.push({ path: local.replaceAll('\\', '/'), size: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') }); }
     else throw new Error('软件包不能包含链接或特殊文件');
