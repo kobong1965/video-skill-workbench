@@ -305,7 +305,7 @@ internal sealed class SoftwareUpdateWindow : Form
         layout.Controls.Add(new Label { Text = "更新说明", AutoSize = true, Margin = new Padding(0, 0, 0, 6) }, 0, 1);
         layout.Controls.Add(notes, 0, 2);
         layout.Controls.Add(state, 0, 3);
-        var guidance = new Label { Text = "仅下载并校验 Windows 软件包，不自动安装。脚本 Skill 需要单独导入。\r\n" + InstallGuidance, AutoSize = true, Dock = DockStyle.Fill, Margin = new Padding(0, 12, 0, 12) };
+        var guidance = new Label { Text = "仅下载并校验 Windows 软件包，不自动安装。现有脚本、素材和本机配置继续保留，不随更新上传。\r\n" + InstallGuidance, AutoSize = true, Dock = DockStyle.Fill, Margin = new Padding(0, 12, 0, 12) };
         layout.Controls.Add(guidance, 0, 4);
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, WrapContents = true };
         buttons.Controls.AddRange(new Control[] { check, download, cancel, folder });

@@ -4,8 +4,13 @@ import { api, copyText } from '../api';
 import { useLoad, useWorkspace } from '../workspace';
 import { ExecutionSettings, ProviderPool } from './ProviderPool';
 import { AsyncButton, Message } from '../ui';
+import { SoftwareUpdatePanel } from './SoftwareUpdatePanel';
 
 export function Settings() {
+  return <div className="stack"><SoftwareUpdatePanel/><SettingsContent/></div>;
+}
+
+function SettingsContent() {
   const { config, user } = useWorkspace();
   if (!config.singleUserMode) return <MultiUserSettings/>;
   if (user.role !== 'admin') return <Message>请使用本机管理员账号配置接口。</Message>;

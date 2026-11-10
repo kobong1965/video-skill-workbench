@@ -2,31 +2,31 @@
 
 Windows 本机视频脚本与素材工作台：保存、预览和组合 Skill，根据商品图生成中文视频提示词，再导入 LibTV 画布，由使用者确认模型后手动生成。
 
-当前软件版本为 **0.1.19**。从本版开始，仓库同步与新 Release 仅发布程序源码、Windows 软件包和校验文件，不再同步脚本 Skill、素材库或其他用户资料。软件仍可使用和导入使用者自己的脚本。
+当前软件版本为 **0.1.20**。从 0.1.19 开始，仓库同步与新 Release 仅发布程序源码、Windows 软件包和校验文件，不再同步脚本 Skill、素材库或其他用户资料。软件仍可使用和导入使用者自己的脚本。
 
 ## 下载与运行
 
-- **[下载 Windows x64 软件包](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.19/VideoSkillWorkbench-0.1.19-Windows-x64.zip)**
-- [版本说明与校验文件](https://github.com/kobong1965/video-skill-workbench/releases/tag/v0.1.19)
-- [SHA256SUMS.txt](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.19/SHA256SUMS.txt)
+- **[下载 Windows x64 软件包](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.20/VideoSkillWorkbench-0.1.20-Windows-x64.zip)**
+- [版本说明与校验文件](https://github.com/kobong1965/video-skill-workbench/releases/tag/v0.1.20)
+- [SHA256SUMS.txt](https://github.com/kobong1965/video-skill-workbench/releases/download/v0.1.20/SHA256SUMS.txt)
 
 请完整解压 Windows 软件包并保留全部子目录，再启动目录中的 EXE。下载后可用 PowerShell 的 `Get-FileHash -Algorithm SHA256` 与该版本的 `SHA256SUMS.txt` 比对；软件内下载也会验证该校验文件。
 
 要求：**Windows 10/11 x64、可用 E 盘、Microsoft WebView2 Runtime**。Node、.NET 及后台运行文件随软件提供。当前版本按 `E:\Codex工作盘` 的目录规则工作，并非任意盘符便携版。
 
-1. 完整解压到 `E:\Codex工作盘\` 下的独立程序目录，例如 `E:\Codex工作盘\artifacts\latest\video-skill-workbench\windows-0.1.19`，打开其中的 `视频Skill工作台.exe`。
+1. 完整解压到 `E:\Codex工作盘\` 下的独立程序目录，例如 `E:\Codex工作盘\artifacts\latest\video-skill-workbench\windows-0.1.20`，打开其中的 `视频Skill工作台.exe`。
 2. 新电脑首次使用：右上角“⋯ → 首次安装码”，自行创建管理员账号；已有账号无需重建。
 3. 在工作台的“脚本”页导入自己的单个 Skill ZIP；已有安装沿用原数据目录内的脚本。在“设置”配置自己的文字／视觉接口、模型和密钥，图片接口按需配置。
 4. 上传商品或选择保存的款号图套 → 选择脚本 → 下一步 → 常规／高级设置 → 生成提示词。
 5. 提示词完成后可导入 LibTV，只建工作流，不自动调用视频模型；确认模型、时长、比例与声音后手动生成。
 
-已有安装可通过原生窗口菜单 **“检查版本更新”** 检查并下载 GitHub 上最新稳定版的程序 ZIP，下载时使用同一 Release 的 `SHA256SUMS.txt` 验证完整性。检查与下载只处理程序，不同步脚本、素材、账号、密钥或数据库，也不自动覆盖正在运行的程序。
+在 **设置 → 软件更新 → 检查更新** 打开版本更新窗口，或使用右上角“⋯”中的“检查版本更新”。设置页显示当前实际运行的桌面版本，更新窗口检查 GitHub 最新稳定版并下载程序 ZIP，使用同一 Release 的 `SHA256SUMS.txt` 验证完整性。检查与下载只处理程序，不同步脚本、素材、账号、密钥或数据库，也不自动覆盖正在运行的程序。旧桌面程序需先手动安装新版并将快捷方式指向新版，才能看到新入口。
 
 升级时先等待当前任务完成并备份数据，将新版解压到 `E:\Codex工作盘\` 下另一个独立程序目录。关闭旧窗口并确认旧后台已退出后，再启动新版；不确定后台是否退出时，可在任务完成后重启电脑，再启动新版。确认新版可用后再调整快捷方式。原固定数据目录 `E:\Codex工作盘\projects\video-skill-workbench-data` 保持不变，不要删除、移动或用他人数据替换；不要同时运行新旧后台。
 
 ## 最新功能
 
-- 原生窗口新增“检查版本更新”，可检查最新稳定版、下载程序 ZIP 并验证 SHA-256。更新采用独立程序目录，保留原本机数据。
+- 设置页顶部新增“软件更新”板块和“检查更新”按钮，显示真实桌面版本。原生更新窗口检查稳定版、下载程序 ZIP 并验证 SHA-256；右上角菜单入口继续保留。更新采用独立程序目录，保留原本机数据。
 - 软件发布与脚本资料分离：新版本不再同步或附带 Skill 合集、素材库、商品资料、数据库、导出记录和本机配置。
 - 产品表支持按款号、品类、店铺及完整商品 ID 查找。选用商品后保存独立的选用资料，创作任务可以在 LibTV 画布中保留商品资料记录。产品表同步依赖本机目录中的产品表与媒体，手动款号和上传入口可直接使用。
 - 圆角渐变界面、蜗牛 Logo、顶部草稿／下一步按钮、拖拽上传和大脚本预览。
@@ -59,7 +59,7 @@ node scripts/run.mjs test --temp-root "E:\Codex工作盘\temp\video-skill-workbe
 
 ## 核验、隐私与许可
 
-软件发布的边界检查覆盖 Skill 库、`SKILL.md`、原视频、脚本压缩合集、用户数据目录、数据库和秘密文件；通用构建工具、数据库迁移及合法运行依赖继续保留。具体功能与发行验收结果以 [0.1.19 版本说明](docs/release-0.1.19.md) 为准。
+软件发布的边界检查覆盖 Skill 库、`SKILL.md`、原视频、脚本压缩合集、用户数据目录、数据库和秘密文件；通用构建工具、数据库迁移及合法运行依赖继续保留。具体功能以 [0.1.20 版本说明](docs/release-0.1.20.md) 为准。
 
 本次停止同步从 0.1.19 开始生效。既有 Git 历史以及旧版 `v0.1.18` Release 曾发布脚本 Skill，旧版更早的标签也可能包含素材；本次没有改写 Git 历史或删除旧 Release。停止后续同步不会撤回已公开内容，若需清理历史，应另行明确范围后处理。
 

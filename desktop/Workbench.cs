@@ -18,8 +18,8 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
 [assembly: AssemblyTitle("视频 Skill 工作台")]
-[assembly: AssemblyVersion("0.1.19.0")]
-[assembly: AssemblyFileVersion("0.1.19.0")]
+[assembly: AssemblyVersion("0.1.20.0")]
+[assembly: AssemblyFileVersion("0.1.20.0")]
 [assembly: SupportedOSPlatform("windows")]
 
 internal static class Program
@@ -86,10 +86,7 @@ internal sealed class WorkbenchWindow : FramelessWindow
             else MessageBox.Show(this, "后台启动完成后会生成安装码。已有账号直接登录即可。", "首次使用");
         });
         menu.Items.Add("刷新", null, delegate { if (view.CoreWebView2 != null) view.Reload(); });
-        menu.Items.Add("检查版本更新", null, delegate {
-            if (updateWindow == null || updateWindow.IsDisposed) { updateWindow = new SoftwareUpdateWindow(Program.CurrentVersion); updateWindow.Show(this); }
-            else { if (updateWindow.WindowState == FormWindowState.Minimized) updateWindow.WindowState = FormWindowState.Normal; updateWindow.Activate(); }
-        });
+        menu.Items.Add("检查版本更新", null, delegate { OpenSoftwareUpdates(); });
         menu.Items.Add("使用说明", null, delegate { MessageBox.Show(this, "上传商品或选择已保存款号、选择 Skill，点击顶部下一步设置并提交。\n任务在创作页右侧任务栏显示，可继续新建其他任务。\n设置可保存多个模型接口，系统按接口空位自动分配、并行处理多个计划。\n\n导入 LibTV 仅上传素材和建立工作流，不自动生成。\n生成模型由你在画布中选择。\n\n单人模式：配置 API Key 后直接生成，无软件额度或重试次数上限。\n" + Program.VersionLabel + " · 数据保存在 E 盘\n\n菜单“检查版本更新”可下载并校验新版软件包。\n" + SoftwareUpdateWindow.InstallGuidance, "使用说明"); });
         view.Dock = DockStyle.Fill; view.Visible = false;
         status.Dock = DockStyle.Fill; status.TextAlign = ContentAlignment.MiddleCenter;
@@ -121,6 +118,32 @@ internal sealed class WorkbenchWindow : FramelessWindow
     {
         Directory.CreateDirectory(folder);
         Process.Start(new ProcessStartInfo("explorer.exe", "\"" + folder + "\"") { UseShellExecute = true });
+    }
+    private void OpenSoftwareUpdates()
+    {
+        if (updateWindow == null || updateWindow.IsDisposed) { updateWindow = new SoftwareUpdateWindow(Program.CurrentVersion); updateWindow.Show(this); }
+        else { if (updateWindow.WindowState == FormWindowState.Minimized) updateWindow.WindowState = FormWindowState.Normal; updateWindow.Activate(); }
+    }
+    // This bridge exposes exactly two update UI commands to our local main page.
+    // It never accepts a URL, file path, process command or arbitrary native call.
+    internal static bool TryUpdateMessage(string source, string json, out string action, out string requestId)
+    {
+        action = null; requestId = null;
+        if (!Allowed(source) || string.IsNullOrEmpty(json) || json.Length > 1024) return false;
+        try {
+            using (var document = JsonDocument.Parse(json)) {
+                var root = document.RootElement;
+                if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("type", out var type) || type.ValueKind != JsonValueKind.String || type.GetString() != "vsw-software-update"
+                    || !root.TryGetProperty("action", out var command) || command.ValueKind != JsonValueKind.String
+                    || !root.TryGetProperty("requestId", out var id) || id.ValueKind != JsonValueKind.String) return false;
+                string value = command.GetString(), key = id.GetString();
+                if ((value != "info" && value != "open") || string.IsNullOrEmpty(key) || key.Length > 100
+                    || key.Any(c => !char.IsAsciiLetterOrDigit(c) && c != '-' && c != '_')) return false;
+                foreach (var property in root.EnumerateObject())
+                    if (property.Name != "type" && property.Name != "action" && property.Name != "requestId") return false;
+                action = value; requestId = key; return true;
+            }
+        } catch (JsonException) { return false; }
     }
     private async Task<bool> Healthy()
     {
@@ -186,7 +209,15 @@ internal sealed class WorkbenchWindow : FramelessWindow
                 view.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
                 view.CoreWebView2.Settings.IsStatusBarEnabled = false;
                 view.CoreWebView2.Settings.AreHostObjectsAllowed = false;
-                view.CoreWebView2.Settings.IsWebMessageEnabled = false;
+                view.CoreWebView2.Settings.IsWebMessageEnabled = true;
+                view.CoreWebView2.WebMessageReceived += delegate(object sender, CoreWebView2WebMessageReceivedEventArgs e) {
+                    string action, requestId;
+                    if (!Allowed(view.Source?.AbsoluteUri) || !TryUpdateMessage(e.Source, e.WebMessageAsJson, out action, out requestId)) return;
+                    try {
+                        if (action == "open") OpenSoftwareUpdates();
+                        view.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(new { type = "vsw-software-update", requestId, currentVersion = Program.CurrentVersion?.ToString(3), opened = action == "open" }));
+                    } catch (InvalidOperationException) { }
+                };
                 view.CoreWebView2.Profile.DefaultDownloadFolderPath = downloadRoot;
                 view.CoreWebView2.NavigationStarting += delegate(object sender, CoreWebView2NavigationStartingEventArgs e) { if (!Allowed(e.Uri)) e.Cancel = true; };
                 view.CoreWebView2.NewWindowRequested += delegate(object sender, CoreWebView2NewWindowRequestedEventArgs e) { e.Handled = true; };

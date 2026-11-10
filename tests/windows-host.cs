@@ -27,6 +27,7 @@ internal static class WindowsHostTests
     static int Run()
     {
         TestSoftwareUpdates();
+        TestSettingsUpdateBridge();
         if (!WorkbenchWindow.Allowed("http://127.0.0.1:4178/")) throw new Exception("工作台导航被拒绝");
         if (!WorkbenchWindow.Allowed("http://127.0.0.1:4178/api/media/a")) throw new Exception("同源路径被拒绝");
         foreach (var url in new[] { "https://example.com", "file:///C:/secret.txt", "javascript:alert(1)", "http://127.0.0.1:4179/", "http://evil@127.0.0.1:4178/", "http://127.0.0.1.evil:4178/" })
@@ -82,6 +83,18 @@ internal static class WindowsHostTests
             window.Close();
         }
         Console.WriteLine("Windows 导航、冷启动、品牌图标、窗口操作、PerMonitorV2 及 100/125/150/200% DPI 尺寸计算：59 项通过；版本更新校验及离线下载测试通过"); return 0;
+    }
+    static void TestSettingsUpdateBridge()
+    {
+        string action, id;
+        foreach (string command in new[] { "info", "open" }) {
+            string message = JsonSerializer.Serialize(new { type = "vsw-software-update", action = command, requestId = "test-request_1" });
+            if (!WorkbenchWindow.TryUpdateMessage("http://127.0.0.1:4178/", message, out action, out id) || action != command || id != "test-request_1") throw new Exception("设置页更新按钮命令被拒绝");
+            foreach (string source in new[] { "https://example.com", "http://127.0.0.1:4179/", "http://localhost:4178/", "http://evil@127.0.0.1:4178/", "file:///secret", null })
+                if (WorkbenchWindow.TryUpdateMessage(source, message, out action, out id)) throw new Exception("外部页面取得了更新桥接能力");
+        }
+        foreach (string message in new[] { "{}", "[]", "null", "not JSON", "{\"type\":\"vsw-software-update\",\"action\":\"download\",\"requestId\":\"1\"}", "{\"type\":\"vsw-software-update\",\"action\":\"open\",\"requestId\":\"1\",\"url\":\"https://evil.example\"}", "{\"type\":\"vsw-software-update\",\"action\":\"open\",\"requestId\":\"../path\"}", "{\"type\":\"vsw-software-update\",\"action\":\"open\",\"requestId\":1}", new string('x', 1025) })
+            if (WorkbenchWindow.TryUpdateMessage("http://127.0.0.1:4178/", message, out action, out id)) throw new Exception("更新桥接接受了不受支持的命令或路径");
     }
     static void TestSoftwareUpdates()
     {
