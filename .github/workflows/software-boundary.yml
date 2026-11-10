@@ -1,0 +1,20 @@
+name: Software-only release boundary
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.21.0
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: node --import tsx scripts/check-software-source.ts
+      - run: node node_modules/typescript/bin/tsc --noEmit
+      - run: node node_modules/vitest/vitest.mjs run tests/unit/windows-package.test.ts tests/unit/software-release-safety.test.ts tests/public-release.test.ts --reporter=default

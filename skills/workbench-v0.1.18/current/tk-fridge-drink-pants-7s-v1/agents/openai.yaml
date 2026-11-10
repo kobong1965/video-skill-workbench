@@ -1,4 +1,0 @@
-interface:
-  display_name: "冰箱饮料裤装7秒"
-  short_description: "沿用开冰箱喝饮料、侧身插袋与前步的一镜方案，按新裤装图换款"
-  default_prompt: "使用 $tk-fridge-drink-pants-7s，按我上传的新裤装图输出完整中文 Seedance 提示词。"

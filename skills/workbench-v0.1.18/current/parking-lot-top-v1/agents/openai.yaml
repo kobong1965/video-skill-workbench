@@ -1,6 +1,0 @@
-interface:
-  display_name: "停车场上衣"
-  short_description: "上传上衣图片，复用停车场强阳光与自然风九镜头，生成中文AI视频提示词"
-  default_prompt: "使用 $parking-lot-top，按“停车场上衣”脚本为我上传的商品图写一份中文 AI 视频提示词。"
-policy:
-  allow_implicit_invocation: true

@@ -1,4 +1,0 @@
-interface:
-  display_name: "深灰阔腿裤｜对标视频确认版"
-  short_description: "保留视频节点1已确认效果；复刻必须同时上传产品图和完整对标视频。"
-  default_prompt: "使用 $trousers-benchmark-approved，按已确认的视频节点1版本复刻深灰阔腿裤；先核对产品图和对标视频均已连接，保留原模型、480p设置和声音。"

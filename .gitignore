@@ -21,3 +21,32 @@ desktop-profile/
 .vite/
 .vite-temp/
 coverage/
+
+# Software releases and source sync exclude user script libraries and local data.
+# scripts/ is application tooling; tests/fixtures/ contains synthetic test inputs.
+/skills/
+/skill-library/
+/materials/
+/catalog.json
+/ui-source/
+/ui-customizations/
+/backend-import/
+/exports/
+/user-exports/
+/backups/
+/private-datasets/
+/datasets/
+/media/
+/user-media/
+/uploads/
+/production/
+/product-images/
+/product-sets/
+*.db
+*.backup
+*.bak
+*.p12
+*.pfx
+*.key
+credentials.json
+secrets.json

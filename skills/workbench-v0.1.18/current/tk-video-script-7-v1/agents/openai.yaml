@@ -1,6 +1,0 @@
-interface:
-  display_name: "视频脚本7｜厨房低机位裤装"
-  short_description: "上传新裤装图，复用已验证的厨房低机位十一镜方案，直接输出完整换款提示词"
-  default_prompt: "使用 $tk-video-script-7，根据我上传的产品图，沿用已验证的镜头方案生成完整中文 Seedance 提示词。"
-policy:
-  allow_implicit_invocation: true

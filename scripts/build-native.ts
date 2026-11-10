@@ -6,7 +6,7 @@ import path from 'node:path';
 import { windowsOutput } from './windows-package';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const dotnetRoot = 'E:/Codex工作盘/runtimes/dotnet-10.0.401';
+export const dotnetRoot = process.env.VSW_DOTNET_ROOT ?? 'E:/Codex工作盘/runtimes/dotnet-10.0.401';
 export async function buildNative(outputRoot: string, test = false) {
   const output = windowsOutput(outputRoot);
   const temp = 'E:/Codex工作盘/temp/video-skill-workbench/dotnet';

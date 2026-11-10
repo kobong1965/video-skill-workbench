@@ -18,8 +18,8 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
 [assembly: AssemblyTitle("视频 Skill 工作台")]
-[assembly: AssemblyVersion("0.1.16.0")]
-[assembly: AssemblyFileVersion("0.1.16.0")]
+[assembly: AssemblyVersion("0.1.19.0")]
+[assembly: AssemblyFileVersion("0.1.19.0")]
 [assembly: SupportedOSPlatform("windows")]
 
 internal static class Program
@@ -28,6 +28,8 @@ internal static class Program
     internal static readonly string DataRoot = Path.Combine(WorkRoot, @"projects\video-skill-workbench-data");
     internal const string Origin = "http://127.0.0.1:4178";
     internal static EventWaitHandle ActivateEvent;
+    internal static readonly Version CurrentVersion = SoftwareUpdates.ReadCurrentVersion(AppDomain.CurrentDomain.BaseDirectory);
+    internal static string VersionLabel => CurrentVersion == null ? "版本未知" : "版本 " + CurrentVersion.ToString(3);
     internal static void ConfigureDisplay()
     {
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
@@ -63,12 +65,13 @@ internal sealed class WorkbenchWindow : FramelessWindow
     private bool loading;
     private bool closingApproved;
     private bool checkingClose;
+    private SoftwareUpdateWindow updateWindow;
     private static readonly HttpClient healthClient = new HttpClient(new SocketsHttpHandler { UseProxy = false }) { Timeout = TimeSpan.FromSeconds(2) };
     private readonly string downloadRoot = Path.Combine(Program.WorkRoot, @"artifacts\latest\video-skill-workbench\用户导出");
 
     public WorkbenchWindow()
     {
-        Text = "视频 Skill 工作台";
+        Text = "视频 Skill 工作台 · " + Program.VersionLabel;
         Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         Width = 1600; Height = 1000;
         MinimumSize = new Size(800, 560);
@@ -83,7 +86,11 @@ internal sealed class WorkbenchWindow : FramelessWindow
             else MessageBox.Show(this, "后台启动完成后会生成安装码。已有账号直接登录即可。", "首次使用");
         });
         menu.Items.Add("刷新", null, delegate { if (view.CoreWebView2 != null) view.Reload(); });
-        menu.Items.Add("使用说明", null, delegate { MessageBox.Show(this, "上传商品或选择已保存款号、选择 Skill，点击顶部下一步设置并提交。\n任务在创作页右侧任务栏显示，可继续新建其他任务。\n设置可保存多个模型接口，系统按接口空位自动分配、并行处理多个计划。\n\n导入 LibTV 仅上传素材和建立工作流，不自动生成。\n生成模型由你在画布中选择。\n\n单人模式：配置 API Key 后直接生成，无软件额度或重试次数上限。\n版本 0.1.16 · 数据保存在 E 盘", "使用说明"); });
+        menu.Items.Add("检查版本更新", null, delegate {
+            if (updateWindow == null || updateWindow.IsDisposed) { updateWindow = new SoftwareUpdateWindow(Program.CurrentVersion); updateWindow.Show(this); }
+            else { if (updateWindow.WindowState == FormWindowState.Minimized) updateWindow.WindowState = FormWindowState.Normal; updateWindow.Activate(); }
+        });
+        menu.Items.Add("使用说明", null, delegate { MessageBox.Show(this, "上传商品或选择已保存款号、选择 Skill，点击顶部下一步设置并提交。\n任务在创作页右侧任务栏显示，可继续新建其他任务。\n设置可保存多个模型接口，系统按接口空位自动分配、并行处理多个计划。\n\n导入 LibTV 仅上传素材和建立工作流，不自动生成。\n生成模型由你在画布中选择。\n\n单人模式：配置 API Key 后直接生成，无软件额度或重试次数上限。\n" + Program.VersionLabel + " · 数据保存在 E 盘\n\n菜单“检查版本更新”可下载并校验新版软件包。\n" + SoftwareUpdateWindow.InstallGuidance, "使用说明"); });
         view.Dock = DockStyle.Fill; view.Visible = false;
         status.Dock = DockStyle.Fill; status.TextAlign = ContentAlignment.MiddleCenter;
         status.Font = new Font("Microsoft YaHei UI", 13); status.Text = "正在打开工作台…\n现有账号、素材和记录将继续保留。";

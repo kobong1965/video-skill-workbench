@@ -1,4 +1,0 @@
-interface:
-  display_name: "客厅裤装30秒"
-  short_description: "沿用客厅低机位30秒11镜方案，上传新裤装图直接生成完整中文提示词"
-  default_prompt: "请使用 $tk-livingroom-pants-30s，根据我上传的新裤装产品图，沿用客厅30秒11镜方案输出完整中文Seedance提示词。"

@@ -1,4 +1,0 @@
-interface:
-  display_name: "西部牛仔裤"
-  short_description: "沿用西部场景十二镜头方案，为新裤子生成中文提示词和美式英文口播"
-  default_prompt: "请使用 $tk-western-pants，根据我上传的新裤子产品图，输出沿用已验证西部十二镜头方案的完整中文提示词，口播和字幕使用美式英文。"

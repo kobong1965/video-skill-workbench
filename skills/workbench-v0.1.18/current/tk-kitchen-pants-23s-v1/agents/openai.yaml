@@ -1,4 +1,0 @@
-interface:
-  display_name: "厨房裤装23秒"
-  short_description: "上传新裤装图，保留厨房低机位十一镜与原声音方案，输出完整中文换款提示词"
-  default_prompt: "使用 $tk-kitchen-pants-23s，根据我上传的新产品图，沿用已确认方案输出完整中文 Seedance 2.5 提示词。"

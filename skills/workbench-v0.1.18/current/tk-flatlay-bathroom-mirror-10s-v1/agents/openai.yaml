@@ -1,4 +1,0 @@
-interface:
-  display_name: "四件平铺镜自拍10秒"
-  short_description: "沿用本套已确认对标的场景与节奏，用新产品图生成完整中文视频提示词"
-  default_prompt: "使用 $tk-flatlay-bathroom-mirror-10s，根据上传的新产品图生成完整中文Seedance提示词。"

@@ -1,12 +1,16 @@
 import path from 'node:path';
 import { workPath } from '../packages/storage/backup';
+import { validateSoftwareReleasePaths } from './software-release-safety';
 
-export const windowsPayload = ['apps/api', 'apps/worker', 'packages', 'database/migrations', 'scripts/postgres.ts', 'scripts/desktop-service.ts', 'scripts/service-shutdown.ts', 'scripts/service-child.ts', 'scripts/windows-package.ts', 'package.json', 'package-lock.json'] as const;
+export const windowsPayload = ['apps/api', 'apps/worker', 'packages', 'database/migrations', 'scripts/postgres.ts', 'scripts/desktop-service.ts', 'scripts/service-shutdown.ts', 'scripts/service-child.ts', 'scripts/windows-package.ts', 'scripts/software-release-safety.ts', 'package.json', 'package-lock.json'] as const;
 export const windowsNotices = ['THIRD-PARTY-NOTICES.md'] as const;
 
 export const windowsWebInput = windowsOutput;
 
 export function distributableFile(relative: string) {
+  // fs.cp calls its filter once for the selected source root itself.
+  if (!relative) return true;
+  try { validateSoftwareReleasePaths([relative]); } catch { return false; }
   return !relative.split(/[/\\]/).some(part => /^(?:tests?|testing|__tests__|fixtures?|examples?|benchmarks?)(?:[.-].*)?$/i.test(part)
     || /^(?:coverage|\.git|\.cache|\.vite(?:-temp)?|desktop-profile|local-secrets\.json|postgres-local\.json|\.env(?:\..*)?)$/i.test(part)
     || /\.(?:test|spec)(?:[-.].*)?$/i.test(part));

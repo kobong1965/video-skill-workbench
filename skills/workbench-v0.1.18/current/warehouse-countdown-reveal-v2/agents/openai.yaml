@@ -1,6 +1,0 @@
-interface:
-  display_name: "仓储倒数揭幕带货开场"
-  short_description: "复用双员工同步倒数、掀布和产品揭晓的带货视频开场"
-  default_prompt: "Use $warehouse-countdown-reveal to adapt the approved countdown opening to my product image and continue it with my next script skill."
-policy:
-  allow_implicit_invocation: true
